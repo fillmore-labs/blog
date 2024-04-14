@@ -308,15 +308,65 @@
     <div class="relative flex grow flex-col">
       <main id="main-content" class="grow">
         
-  <article class="max-w-full">
-    <header>
+  <article>
+    <header class="max-w-prose">
       
       <h1 class="mt-0 text-4xl font-extrabold text-neutral-900 dark:text-neutral">
         Structured Concurrency
       </h1>
+      
+        <div class="mb-12 mt-8 text-base text-neutral-500 print:hidden dark:text-neutral-400">
+          
+
+
+
+
+
+  
+  
+
+
+
+  
+
+  
+  
+    
+  
+
+  
+
+  
+
+  
+    
+  
+
+  
+
+
+  <div class="flex flex-row flex-wrap items-center">
+    
+    
+      <time datetime="2024-03-22 12:00:00 &#43;0100 CET">22 March 2024</time><span class="px-2 text-primary-500">&middot;</span><span title="Reading time">5 mins</span>
+    
+
+    
+    
+  </div>
+
+  
+  
+
+
+        </div>
+      
+      
     </header>
-    <section class="prose mt-6 max-w-full dark:prose-invert">
-      <p>&hellip; continued from the 
+    <section class="prose mt-0 flex max-w-full flex-col dark:prose-invert lg:flex-row">
+      
+      <div class="min-h-0 min-w-0 max-w-prose grow">
+        <p>&hellip; continued from the 
       
     <a href="/posts/goroutines-4/">previous post</a>.</p>
 <h3 id="different-categories-of-concurrency" class="relative group">Different Categories of Concurrency <span class="absolute top-0 w-6 transition-opacity opacity-0 -start-6 not-prose group-hover:opacity-100"><a class="group-hover:text-primary-300 dark:group-hover:text-neutral-700" style="text-decoration-line: none !important;" href="#different-categories-of-concurrency" aria-label="Anchor">#</a></span></h3><p>When recalling the 
@@ -548,20 +598,26 @@ sub-contexts is helpful for avoiding resource leaks.</p>
 <hr>
 <ol>
 <li id="fn:1">
-<p>Martin Sústrik. 2016. Structured Concurrency. In 250bpm Blog — February 2016 — <a href="https://250bpm.com/blog:71/" target="_blank" rel="noreferrer">https://250bpm.com/blog:71/</a>&#160;<a href="#fnref:1" class="footnote-backref" role="doc-backlink">&#x21a9;&#xfe0e;</a></p>
+<p>Martin Sústrik. 2016. Structured Concurrency. In 250bpm Blog — February 2016 —
+&lt;<a href="https://250bpm.com/blog:71/" target="_blank" rel="noreferrer">250bpm.com/blog:71/</a>&gt;&#160;<a href="#fnref:1" class="footnote-backref" role="doc-backlink">&#x21a9;&#xfe0e;</a></p>
 </li>
 <li id="fn:2">
 <p>Nathaniel J. Smith. 2018. Notes on structured concurrency, or: Go statement considered harmful. In njs blog — April
-2018 — <a href="https://vorpus.org/blog/notes-on-structured-concurrency-or-go-statement-considered-harmful/" target="_blank" rel="noreferrer">https://vorpus.org/blog/notes-on-structured-concurrency-or-go-statement-considered-harmful/</a>&#160;<a href="#fnref:2" class="footnote-backref" role="doc-backlink">&#x21a9;&#xfe0e;</a></p>
+2018 —
+&lt;<a href="https://vorpus.org/blog/notes-on-structured-concurrency-or-go-statement-considered-harmful/" target="_blank" rel="noreferrer">vorpus.org/blog/notes-on-structured-concurrency-or-go-statement-considered-harmful/</a>&gt;&#160;<a href="#fnref:2" class="footnote-backref" role="doc-backlink">&#x21a9;&#xfe0e;</a></p>
 </li>
 <li id="fn:3">
-<p>Sameer Ajmani. 2014. Go Concurrency Patterns: Context. In The Go Blog — July 2014 — <a href="https://go.dev/blog/context" target="_blank" rel="noreferrer">https://go.dev/blog/context</a>&#160;<a href="#fnref:3" class="footnote-backref" role="doc-backlink">&#x21a9;&#xfe0e;</a></p>
+<p>Sameer Ajmani. 2014. Go Concurrency Patterns: Context. In The Go Blog — July 2014 —
+&lt;<a href="https://go.dev/blog/context" target="_blank" rel="noreferrer">go.dev/blog/context</a>&gt;&#160;<a href="#fnref:3" class="footnote-backref" role="doc-backlink">&#x21a9;&#xfe0e;</a></p>
 </li>
 </ol>
 </div>
 
+      </div>
     </section>
-    <footer class="pt-8">
+    <footer class="max-w-prose pt-8 print:hidden">
+      
+
       
   
   <section class="flex flex-row flex-wrap justify-center pt-4 text-xl">
@@ -621,6 +677,64 @@ sub-contexts is helpful for avoiding resource leaks.</p>
   </section>
 
 
+      
+  
+    
+    
+    
+    <div class="pt-8">
+      <hr class="border-dotted border-neutral-300 dark:border-neutral-600" />
+      <div class="flex justify-between pt-3">
+        <span>
+          
+            <a class="group flex" href="/posts/goroutines-4/">
+              <span
+                class="me-2 text-neutral-700 transition-transform group-hover:-translate-x-[2px] group-hover:text-primary-600 dark:text-neutral dark:group-hover:text-primary-400"
+                ><span class="ltr:inline rtl:hidden">&larr;</span
+                ><span class="ltr:hidden rtl:inline">&rarr;</span></span
+              >
+              <span class="flex flex-col">
+                <span
+                  class="mt-[0.1rem] leading-6 group-hover:underline group-hover:decoration-primary-500"
+                  >Resource Leaks</span
+                >
+                <span class="mt-[0.1rem] text-xs text-neutral-500 dark:text-neutral-400">
+                  
+                    <time datetime="2024-03-21 12:00:00 &#43;0100 CET">21 March 2024</time>
+                  
+                </span>
+              </span>
+            </a>
+          
+        </span>
+        <span>
+          
+            <a class="group flex text-right" href="/posts/structured-2/">
+              <span class="flex flex-col">
+                <span
+                  class="mt-[0.1rem] leading-6 group-hover:underline group-hover:decoration-primary-500"
+                  >An Alternative Approach</span
+                >
+                <span class="mt-[0.1rem] text-xs text-neutral-500 dark:text-neutral-400">
+                  
+                    <time datetime="2024-03-25 12:00:00 &#43;0100 CET">25 March 2024</time>
+                  
+                </span>
+              </span>
+              <span
+                class="ms-2 text-neutral-700 transition-transform group-hover:-translate-x-[2px] group-hover:text-primary-600 dark:text-neutral dark:group-hover:text-primary-400"
+                ><span class="ltr:inline rtl:hidden">&rarr;</span
+                ><span class="ltr:hidden rtl:inline">&larr;</span></span
+              >
+            </a>
+          
+        </span>
+      </div>
+    </div>
+  
+
+
+      
     </footer>
   </article>
 
