@@ -4,21 +4,21 @@
     <title>Series on Fillmore Labs Blog</title>
     <link>https://blog.fillmore-labs.com/series/</link>
     <description>Recent content in Series on Fillmore Labs Blog</description>
-    <generator>Hugo -- gohugo.io</generator>
+    <generator>Hugo</generator>
     <language>en-US</language>
-    <lastBuildDate>Thu, 28 Mar 2024 12:00:00 +0100</lastBuildDate>
+    <lastBuildDate>Tue, 16 Apr 2024 12:00:00 +0200</lastBuildDate>
     <atom:link href="https://blog.fillmore-labs.com/series/index.xml" rel="self" type="application/rss+xml" />
     <item>
       <title>Go Concurrency</title>
       <link>https://blog.fillmore-labs.com/series/go-concurrency/</link>
-      <pubDate>Thu, 28 Mar 2024 12:00:00 +0100</pubDate>
+      <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
       <guid>https://blog.fillmore-labs.com/series/go-concurrency/</guid>
       <description></description>
     </item>
     <item>
       <title>Structured Concurrency</title>
       <link>https://blog.fillmore-labs.com/series/structured-concurrency/</link>
-      <pubDate>Thu, 28 Mar 2024 12:00:00 +0100</pubDate>
+      <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
       <guid>https://blog.fillmore-labs.com/series/structured-concurrency/</guid>
       <description></description>
     </item>

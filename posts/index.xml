@@ -4,10 +4,24 @@
     <title>Blog on Fillmore Labs Blog</title>
     <link>https://blog.fillmore-labs.com/posts/</link>
     <description>Recent content in Blog on Fillmore Labs Blog</description>
-    <generator>Hugo -- gohugo.io</generator>
+    <generator>Hugo</generator>
     <language>en-US</language>
-    <lastBuildDate>Wed, 10 Apr 2024 12:00:00 +0200</lastBuildDate>
+    <lastBuildDate>Tue, 16 Apr 2024 12:00:00 +0200</lastBuildDate>
     <atom:link href="https://blog.fillmore-labs.com/posts/index.xml" rel="self" type="application/rss+xml" />
+    <item>
+      <title>More Concurrency Bugs</title>
+      <link>https://blog.fillmore-labs.com/posts/concurrency-bugs-2/</link>
+      <pubDate>Tue, 16 Apr 2024 12:00:00 +0200</pubDate>
+      <guid>https://blog.fillmore-labs.com/posts/concurrency-bugs-2/</guid>
+      <description>More Real-world Usage #Datadog has excellent software engineers.</description>
+    </item>
+    <item>
+      <title>Concurrency Bugs</title>
+      <link>https://blog.fillmore-labs.com/posts/concurrency-bugs-1/</link>
+      <pubDate>Mon, 15 Apr 2024 12:00:00 +0200</pubDate>
+      <guid>https://blog.fillmore-labs.com/posts/concurrency-bugs-1/</guid>
+      <description>Errors Observed in Real-world Usage #In “ Problems With Concurrency” I mentioned that I see concurrency issues a lot.</description>
+    </item>
     <item>
       <title>Java Structured Concurrency</title>
       <link>https://blog.fillmore-labs.com/posts/javavirtualthreads-2/</link>
