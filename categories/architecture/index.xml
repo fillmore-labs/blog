@@ -1,0 +1,559 @@
+<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom"><channel><title>Fillmore Labs Blog – Architecture</title><link>https://blog.fillmore-labs.com/categories/architecture/</link><description>Recent content in Architecture on Fillmore Labs Blog</description><generator>Hugo -- gohugo.io</generator><language>en-US</language><lastBuildDate>Sat, 31 May 2025 12:00:00 +0200</lastBuildDate><atom:link href="https://blog.fillmore-labs.com/categories/architecture/index.xml" rel="self" type="application/rss+xml"/><item><title>The Perils of Pointers in the Land of the Zero-Sized Type</title><link>https://blog.fillmore-labs.com/posts/zerosized-1/</link><pubDate>Sat, 31 May 2025 12:00:00 +0200</pubDate><guid>https://blog.fillmore-labs.com/posts/zerosized-1/</guid><description>
+&lt;p>Imagine writing a translation function that transforms internal errors into public API errors. In the first iteration,
+you return &lt;code>nil&lt;/code> when no translation takes place. You make a simple change — returning the original error instead of
+&lt;code>nil&lt;/code> — and suddenly your program behaves differently:&lt;/p>
+&lt;div class="hextra-code-block hx-relative hx-mt-6 first:hx-mt-0 hx-group/code">
+&lt;div>&lt;div class="highlight">&lt;pre tabindex="0" class="chroma">&lt;code class="language-console" data-lang="console">&lt;span class="line">&lt;span class="cl">&lt;span class="go">translate1: unsupported operation
+&lt;/span>&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">&lt;span class="go">translate2: internal not implemented
+&lt;/span>&lt;/span>&lt;/span>&lt;/code>&lt;/pre>&lt;/div>&lt;/div>&lt;div class="hextra-code-copy-btn-container hx-opacity-0 hx-transition group-hover/code:hx-opacity-100 hx-flex hx-gap-1 hx-absolute hx-m-[11px] hx-right-0 hx-top-0">
+&lt;button
+class="hextra-code-copy-btn hx-group/copybtn hx-transition-all active:hx-opacity-50 hx-bg-primary-700/5 hx-border hx-border-black/5 hx-text-gray-600 hover:hx-text-gray-900 hx-rounded-md hx-p-1.5 dark:hx-bg-primary-300/10 dark:hx-border-white/10 dark:hx-text-gray-400 dark:hover:hx-text-gray-50"
+title="Copy code"
+>
+&lt;div class="copy-icon group-[.copied]/copybtn:hx-hidden hx-pointer-events-none hx-h-4 hx-w-4">&lt;/div>
+&lt;div class="success-icon hx-hidden group-[.copied]/copybtn:hx-block hx-pointer-events-none hx-h-4 hx-w-4">&lt;/div>
+&lt;/button>
+&lt;/div>
+&lt;/div>
+&lt;p>This program prints two different results from the nearly identical functions
+(&lt;a href="https://go.dev/play/p/FSukmCbbky7" target="_blank" rel="noopener">Go Playground&lt;/a>). Can you spot why?&lt;/p>
+&lt;div class="hextra-code-block hx-relative hx-mt-6 first:hx-mt-0 hx-group/code">
+&lt;div>&lt;div class="highlight">&lt;div class="chroma">
+&lt;table class="lntable">&lt;tr>&lt;td class="lntd">
+&lt;pre tabindex="0" class="chroma">&lt;code>&lt;span class="lnt"> 8
+&lt;/span>&lt;span class="lnt"> 9
+&lt;/span>&lt;span class="lnt">10
+&lt;/span>&lt;span class="lnt">11
+&lt;/span>&lt;span class="lnt">12
+&lt;/span>&lt;span class="lnt">13
+&lt;/span>&lt;span class="lnt">14
+&lt;/span>&lt;span class="lnt">15
+&lt;/span>&lt;span class="lnt">16
+&lt;/span>&lt;span class="lnt">17
+&lt;/span>&lt;span class="lnt">18
+&lt;/span>&lt;span class="lnt">19
+&lt;/span>&lt;span class="lnt">20
+&lt;/span>&lt;span class="lnt">21
+&lt;/span>&lt;span class="lnt">22
+&lt;/span>&lt;span class="lnt">23
+&lt;/span>&lt;span class="lnt">24
+&lt;/span>&lt;span class="lnt">25
+&lt;/span>&lt;span class="lnt">26
+&lt;/span>&lt;span class="lnt">27
+&lt;/span>&lt;span class="lnt">28
+&lt;/span>&lt;span class="lnt">29
+&lt;/span>&lt;span class="lnt">30
+&lt;/span>&lt;span class="lnt">31
+&lt;/span>&lt;span class="lnt">32
+&lt;/span>&lt;span class="lnt">33
+&lt;/span>&lt;span class="lnt">34
+&lt;/span>&lt;span class="lnt">35
+&lt;/span>&lt;span class="lnt">36
+&lt;/span>&lt;span class="lnt">37
+&lt;/span>&lt;/code>&lt;/pre>&lt;/td>
+&lt;td class="lntd">
+&lt;pre tabindex="0" class="chroma">&lt;code class="language-go" data-lang="go">&lt;span class="line">&lt;span class="cl">&lt;span class="kd">type&lt;/span> &lt;span class="nx">NotImplementedError&lt;/span> &lt;span class="kd">struct&lt;/span>&lt;span class="p">{}&lt;/span>
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">&lt;span class="kd">func&lt;/span> &lt;span class="p">(&lt;/span>&lt;span class="o">*&lt;/span>&lt;span class="nx">NotImplementedError&lt;/span>&lt;span class="p">)&lt;/span> &lt;span class="nf">Error&lt;/span>&lt;span class="p">()&lt;/span> &lt;span class="kt">string&lt;/span> &lt;span class="p">{&lt;/span>
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> &lt;span class="k">return&lt;/span> &lt;span class="s">&amp;#34;internal not implemented&amp;#34;&lt;/span>
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">&lt;span class="p">}&lt;/span>
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">&lt;span class="kd">func&lt;/span> &lt;span class="nf">Translate1&lt;/span>&lt;span class="p">(&lt;/span>&lt;span class="nx">err&lt;/span> &lt;span class="kt">error&lt;/span>&lt;span class="p">)&lt;/span> &lt;span class="kt">error&lt;/span> &lt;span class="p">{&lt;/span>
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> &lt;span class="k">if&lt;/span> &lt;span class="p">(&lt;/span>&lt;span class="nx">err&lt;/span> &lt;span class="o">==&lt;/span> &lt;span class="o">&amp;amp;&lt;/span>&lt;span class="nx">NotImplementedError&lt;/span>&lt;span class="p">{})&lt;/span> &lt;span class="p">{&lt;/span>
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> &lt;span class="k">return&lt;/span> &lt;span class="nx">errors&lt;/span>&lt;span class="p">.&lt;/span>&lt;span class="nx">ErrUnsupported&lt;/span>
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> &lt;span class="p">}&lt;/span>
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> &lt;span class="k">return&lt;/span> &lt;span class="kc">nil&lt;/span>
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">&lt;span class="p">}&lt;/span>
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">&lt;span class="kd">func&lt;/span> &lt;span class="nf">Translate2&lt;/span>&lt;span class="p">(&lt;/span>&lt;span class="nx">err&lt;/span> &lt;span class="kt">error&lt;/span>&lt;span class="p">)&lt;/span> &lt;span class="kt">error&lt;/span> &lt;span class="p">{&lt;/span>
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> &lt;span class="k">if&lt;/span> &lt;span class="p">(&lt;/span>&lt;span class="nx">err&lt;/span> &lt;span class="o">==&lt;/span> &lt;span class="o">&amp;amp;&lt;/span>&lt;span class="nx">NotImplementedError&lt;/span>&lt;span class="p">{})&lt;/span> &lt;span class="p">{&lt;/span>
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> &lt;span class="k">return&lt;/span> &lt;span class="kc">nil&lt;/span>
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> &lt;span class="p">}&lt;/span>
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> &lt;span class="k">return&lt;/span> &lt;span class="nx">err&lt;/span>
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">&lt;span class="p">}&lt;/span>
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">&lt;span class="kd">func&lt;/span> &lt;span class="nf">main&lt;/span>&lt;span class="p">()&lt;/span> &lt;span class="p">{&lt;/span>
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> &lt;span class="nx">fmt&lt;/span>&lt;span class="p">.&lt;/span>&lt;span class="nf">Printf&lt;/span>&lt;span class="p">(&lt;/span>&lt;span class="s">&amp;#34;translate1: %v\n&amp;#34;&lt;/span>&lt;span class="p">,&lt;/span> &lt;span class="nf">Translate1&lt;/span>&lt;span class="p">(&lt;/span>&lt;span class="nf">DoWork&lt;/span>&lt;span class="p">()))&lt;/span>
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> &lt;span class="nx">fmt&lt;/span>&lt;span class="p">.&lt;/span>&lt;span class="nf">Printf&lt;/span>&lt;span class="p">(&lt;/span>&lt;span class="s">&amp;#34;translate2: %v\n&amp;#34;&lt;/span>&lt;span class="p">,&lt;/span> &lt;span class="nf">Translate2&lt;/span>&lt;span class="p">(&lt;/span>&lt;span class="nf">DoWork&lt;/span>&lt;span class="p">()))&lt;/span>
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">&lt;span class="p">}&lt;/span>
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">&lt;span class="kd">func&lt;/span> &lt;span class="nf">DoWork&lt;/span>&lt;span class="p">()&lt;/span> &lt;span class="kt">error&lt;/span> &lt;span class="p">{&lt;/span>
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> &lt;span class="k">return&lt;/span> &lt;span class="o">&amp;amp;&lt;/span>&lt;span class="nx">NotImplementedError&lt;/span>&lt;span class="p">{}&lt;/span>
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">&lt;span class="p">}&lt;/span>&lt;/span>&lt;/span>&lt;/code>&lt;/pre>&lt;/td>&lt;/tr>&lt;/table>
+&lt;/div>
+&lt;/div>&lt;/div>&lt;div class="hextra-code-copy-btn-container hx-opacity-0 hx-transition group-hover/code:hx-opacity-100 hx-flex hx-gap-1 hx-absolute hx-m-[11px] hx-right-0 hx-top-0">
+&lt;button
+class="hextra-code-copy-btn hx-group/copybtn hx-transition-all active:hx-opacity-50 hx-bg-primary-700/5 hx-border hx-border-black/5 hx-text-gray-600 hover:hx-text-gray-900 hx-rounded-md hx-p-1.5 dark:hx-bg-primary-300/10 dark:hx-border-white/10 dark:hx-text-gray-400 dark:hover:hx-text-gray-50"
+title="Copy code"
+>
+&lt;div class="copy-icon group-[.copied]/copybtn:hx-hidden hx-pointer-events-none hx-h-4 hx-w-4">&lt;/div>
+&lt;div class="success-icon hx-hidden group-[.copied]/copybtn:hx-block hx-pointer-events-none hx-h-4 hx-w-4">&lt;/div>
+&lt;/button>
+&lt;/div>
+&lt;/div>
+&lt;p>The key to this divergent behavior lies in &lt;code>NotImplementedError&lt;/code> being a zero-sized type (ZST). ZSTs are types that
+occupy no memory. Common examples include empty structs &lt;code>struct{}&lt;/code> or a zero-length array &lt;code>[0]byte&lt;/code>. While highly useful
+for tasks like signaling without data transfer (e.g., (&lt;code>chan struct{}&lt;/code> in
+&lt;a href="https://pkg.go.dev/context#Context.Done" target="_blank" rel="noopener">&lt;code>Context.Done()&lt;/code>&lt;/a>) or implementing sets (&lt;code>map[string]struct{}&lt;/code>), their
+interaction with pointers can be particularly tricky.&lt;/p>
+&lt;p>So, why does this simple change lead to different outcomes?&lt;/p>
+&lt;h2>Pointergeist: The Zero Dimension&lt;span class="hx-absolute -hx-mt-20" id="pointergeist-the-zero-dimension">&lt;/span>
+&lt;a href="#pointergeist-the-zero-dimension" class="subheading-anchor" aria-label="Permalink for this section">&lt;/a>&lt;/h2>&lt;p>To understand this behavior, let&amp;rsquo;s see what the Go compiler does behind the scenes.&lt;/p>
+&lt;h3>The Great Pointer Escape&lt;span class="hx-absolute -hx-mt-20" id="the-great-pointer-escape">&lt;/span>
+&lt;a href="#the-great-pointer-escape" class="subheading-anchor" aria-label="Permalink for this section">&lt;/a>&lt;/h3>&lt;p>When we run &lt;code>go build -gcflags='-m=1' .&lt;/code>, we get something like:&lt;/p>
+&lt;div class="hextra-code-block hx-relative hx-mt-6 first:hx-mt-0 hx-group/code">
+&lt;div>&lt;div class="highlight">&lt;pre tabindex="0" class="chroma">&lt;code class="language-console" data-lang="console">&lt;span class="line">&lt;span class="cl">&lt;span class="go">...
+&lt;/span>&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">&lt;span class="go">./main.go:14:17: err does not escape
+&lt;/span>&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">&lt;span class="go">./main.go:15:13: &amp;amp;NotImplementedError{} does not escape
+&lt;/span>&lt;/span>&lt;/span>&lt;span class="line hl">&lt;span class="cl">&lt;span class="go">./main.go:22:17: leaking param: err to result ~r0 level=0
+&lt;/span>&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">&lt;span class="go">./main.go:23:13: &amp;amp;NotImplementedError{} does not escape
+&lt;/span>&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">&lt;span class="go">./main.go:31:12: ... argument does not escape
+&lt;/span>&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">&lt;span class="go">./main.go:31:50: &amp;amp;NotImplementedError{} does not escape
+&lt;/span>&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">&lt;span class="go">./main.go:31:43: &amp;amp;NotImplementedError{} does not escape
+&lt;/span>&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">&lt;span class="go">./main.go:32:12: ... argument does not escape
+&lt;/span>&lt;/span>&lt;/span>&lt;span class="line hl">&lt;span class="cl">&lt;span class="go">./main.go:32:50: &amp;amp;NotImplementedError{} escapes to heap
+&lt;/span>&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">&lt;span class="go">./main.go:32:43: &amp;amp;NotImplementedError{} does not escape
+&lt;/span>&lt;/span>&lt;/span>&lt;span class="line hl">&lt;span class="cl">&lt;span class="go">./main.go:36:9: &amp;amp;NotImplementedError{} escapes to heap
+&lt;/span>&lt;/span>&lt;/span>&lt;/code>&lt;/pre>&lt;/div>&lt;/div>&lt;div class="hextra-code-copy-btn-container hx-opacity-0 hx-transition group-hover/code:hx-opacity-100 hx-flex hx-gap-1 hx-absolute hx-m-[11px] hx-right-0 hx-top-0">
+&lt;button
+class="hextra-code-copy-btn hx-group/copybtn hx-transition-all active:hx-opacity-50 hx-bg-primary-700/5 hx-border hx-border-black/5 hx-text-gray-600 hover:hx-text-gray-900 hx-rounded-md hx-p-1.5 dark:hx-bg-primary-300/10 dark:hx-border-white/10 dark:hx-text-gray-400 dark:hover:hx-text-gray-50"
+title="Copy code"
+>
+&lt;div class="copy-icon group-[.copied]/copybtn:hx-hidden hx-pointer-events-none hx-h-4 hx-w-4">&lt;/div>
+&lt;div class="success-icon hx-hidden group-[.copied]/copybtn:hx-block hx-pointer-events-none hx-h-4 hx-w-4">&lt;/div>
+&lt;/button>
+&lt;/div>
+&lt;/div>
+&lt;p>The critical line is &lt;code>&amp;amp;NotImplementedError{} escapes to heap&lt;/code> - this refers to the pointer created in the call to
+&lt;code>DoWork()&lt;/code> in line 32. It escapes because the parameter in line 22 is a potential return value (&lt;code>return err&lt;/code>), which is
+fed into &lt;code>fmt.Errorf&lt;/code>.&lt;/p>
+&lt;p>Escape analysis determines whether variables can remain on the stack or must be allocated on the heap. When the compiler
+can&amp;rsquo;t prove a variable won&amp;rsquo;t outlive its function, it “escapes” to the heap.&lt;/p>
+&lt;h3>Honey, I Shrunk the Alloc&lt;span class="hx-absolute -hx-mt-20" id="honey-i-shrunk-the-alloc">&lt;/span>
+&lt;a href="#honey-i-shrunk-the-alloc" class="subheading-anchor" aria-label="Permalink for this section">&lt;/a>&lt;/h3>&lt;p>When Go allocates memory for zero-sized types, it applies a clever optimization: the runtime returns a pointer to
+&lt;code>runtime.zerobase&lt;/code> (see the
+&lt;a href="https://cs.opensource.google/go/go/&amp;#43;/refs/tags/go1.24.3:src/runtime/malloc.go;l=1017-1020" target="_blank" rel="noopener">mallocgc implementation&lt;/a>), a
+single static variable shared by all heap-allocated ZSTs, instead of allocating new memory for each instance.&lt;/p>
+&lt;p>This means multiple &lt;code>&amp;amp;NotImplementedError{}&lt;/code> instances that escape to the heap typically point to the same address.&lt;/p>
+&lt;p>On the other hand, the &lt;code>&amp;amp;NotImplementedError{}&lt;/code> in the comparison in &lt;code>Translate2&lt;/code> does not escape. It gets the address
+of a (zero-sized) variable on the stack.&lt;/p>
+&lt;p>So in &lt;code>Translate2&lt;/code>, the comparison &lt;code>err == &amp;amp;NotImplementedError{}&lt;/code> involves two pointers that, due to one being on the
+stack and the other pointing to &lt;code>runtime.zerobase&lt;/code>, have different memory addresses, thus evaluating to false.&lt;/p>
+&lt;h3>By Design: The Equality Paradox&lt;span class="hx-absolute -hx-mt-20" id="by-design-the-equality-paradox">&lt;/span>
+&lt;a href="#by-design-the-equality-paradox" class="subheading-anchor" aria-label="Permalink for this section">&lt;/a>&lt;/h3>&lt;p>In &lt;code>Translate1&lt;/code>, since the &lt;code>err&lt;/code> parameter (which is another instance of &lt;code>&amp;amp;NotImplementedError{}&lt;/code>) does not escape
+within this function, and the &lt;code>&amp;amp;NotImplementedError{}&lt;/code> literal in the comparison also doesn&amp;rsquo;t escape, both are
+effectively stack-scoped. For stack-allocated ZSTs, the compiler &lt;em>may&lt;/em> optimize by assigning them the same memory
+address, but this is not guaranteed. This contributes to the unreliability of direct pointer comparisons for ZSTs, as
+the outcome can vary depending on compiler decisions and optimizations.&lt;/p>
+&lt;p>This is not a bug — the Go language specification &lt;a href="https://go.dev/ref/spec#Comparison_operators" target="_blank" rel="noopener">explicitly states&lt;/a> that
+the equality of pointers to distinct zero-size variables is unspecified:&lt;/p>
+&lt;blockquote>
+&lt;p>&lt;em>“pointers to distinct zero-size variables may or may not be equal.”&lt;/em>&lt;/p>
+&lt;/blockquote>
+&lt;p>Depending on the path the compiler takes, our program&amp;rsquo;s behavior changes, making our logic unsound. The bug is in the
+program above, not the compiler.&lt;/p>
+&lt;p>You can easily validate the issue by making the error type non-zero-sized:&lt;/p>
+&lt;div class="hextra-code-block hx-relative hx-mt-6 first:hx-mt-0 hx-group/code">
+&lt;div>&lt;div class="highlight">&lt;div class="chroma">
+&lt;table class="lntable">&lt;tr>&lt;td class="lntd">
+&lt;pre tabindex="0" class="chroma">&lt;code>&lt;span class="lnt">8
+&lt;/span>&lt;/code>&lt;/pre>&lt;/td>
+&lt;td class="lntd">
+&lt;pre tabindex="0" class="chroma">&lt;code class="language-go" data-lang="go">&lt;span class="line">&lt;span class="cl">&lt;span class="kd">type&lt;/span> &lt;span class="nx">NotImplementedError&lt;/span> &lt;span class="kd">struct&lt;/span>&lt;span class="p">{&lt;/span> &lt;span class="nx">_&lt;/span> &lt;span class="kt">int&lt;/span> &lt;span class="p">}&lt;/span>&lt;/span>&lt;/span>&lt;/code>&lt;/pre>&lt;/td>&lt;/tr>&lt;/table>
+&lt;/div>
+&lt;/div>&lt;/div>&lt;div class="hextra-code-copy-btn-container hx-opacity-0 hx-transition group-hover/code:hx-opacity-100 hx-flex hx-gap-1 hx-absolute hx-m-[11px] hx-right-0 hx-top-0">
+&lt;button
+class="hextra-code-copy-btn hx-group/copybtn hx-transition-all active:hx-opacity-50 hx-bg-primary-700/5 hx-border hx-border-black/5 hx-text-gray-600 hover:hx-text-gray-900 hx-rounded-md hx-p-1.5 dark:hx-bg-primary-300/10 dark:hx-border-white/10 dark:hx-text-gray-400 dark:hover:hx-text-gray-50"
+title="Copy code"
+>
+&lt;div class="copy-icon group-[.copied]/copybtn:hx-hidden hx-pointer-events-none hx-h-4 hx-w-4">&lt;/div>
+&lt;div class="success-icon hx-hidden group-[.copied]/copybtn:hx-block hx-pointer-events-none hx-h-4 hx-w-4">&lt;/div>
+&lt;/button>
+&lt;/div>
+&lt;/div>
+&lt;h3>The &lt;code>errors.Is&lt;/code> Illusion: Escaped Zero-Sized Types All Look the Same&lt;span class="hx-absolute -hx-mt-20" id="the-errorsis-illusion-escaped-zero-sized-types-all-look-the-same">&lt;/span>
+&lt;a href="#the-errorsis-illusion-escaped-zero-sized-types-all-look-the-same" class="subheading-anchor" aria-label="Permalink for this section">&lt;/a>&lt;/h3>&lt;p>I can hear you saying &lt;em>“Yes, but you should compare errors with &lt;code>errors.Is&lt;/code>.”&lt;/em> You absolutely should. The example
+becomes a little more complex (&lt;a href="https://go.dev/play/p/0q2cMoDkdE3" target="_blank" rel="noopener">Go Playground&lt;/a>):&lt;/p>
+&lt;div class="hextra-code-block hx-relative hx-mt-6 first:hx-mt-0 hx-group/code">
+&lt;div>&lt;div class="highlight">&lt;div class="chroma">
+&lt;table class="lntable">&lt;tr>&lt;td class="lntd">
+&lt;pre tabindex="0" class="chroma">&lt;code>&lt;span class="lnt"> 8
+&lt;/span>&lt;span class="lnt"> 9
+&lt;/span>&lt;span class="lnt">10
+&lt;/span>&lt;span class="lnt">11
+&lt;/span>&lt;span class="lnt">12
+&lt;/span>&lt;span class="lnt">13
+&lt;/span>&lt;span class="lnt">14
+&lt;/span>&lt;span class="lnt">15
+&lt;/span>&lt;span class="lnt">16
+&lt;/span>&lt;span class="lnt">17
+&lt;/span>&lt;span class="lnt">18
+&lt;/span>&lt;span class="lnt">19
+&lt;/span>&lt;span class="lnt">20
+&lt;/span>&lt;span class="lnt">21
+&lt;/span>&lt;span class="lnt">22
+&lt;/span>&lt;span class="lnt">23
+&lt;/span>&lt;span class="lnt">24
+&lt;/span>&lt;span class="lnt">25
+&lt;/span>&lt;span class="lnt">26
+&lt;/span>&lt;span class="lnt">27
+&lt;/span>&lt;span class="lnt">28
+&lt;/span>&lt;span class="lnt">29
+&lt;/span>&lt;span class="lnt">30
+&lt;/span>&lt;span class="lnt">31
+&lt;/span>&lt;span class="lnt">32
+&lt;/span>&lt;span class="lnt">33
+&lt;/span>&lt;span class="lnt">34
+&lt;/span>&lt;span class="lnt">35
+&lt;/span>&lt;span class="lnt">36
+&lt;/span>&lt;span class="lnt">37
+&lt;/span>&lt;span class="lnt">38
+&lt;/span>&lt;/code>&lt;/pre>&lt;/td>
+&lt;td class="lntd">
+&lt;pre tabindex="0" class="chroma">&lt;code class="language-go" data-lang="go">&lt;span class="line">&lt;span class="cl">&lt;span class="kd">type&lt;/span> &lt;span class="nx">NotImplementedError&lt;/span> &lt;span class="kd">struct&lt;/span>&lt;span class="p">{}&lt;/span>
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">&lt;span class="kd">func&lt;/span> &lt;span class="p">(&lt;/span>&lt;span class="o">*&lt;/span>&lt;span class="nx">NotImplementedError&lt;/span>&lt;span class="p">)&lt;/span> &lt;span class="nf">Error&lt;/span>&lt;span class="p">()&lt;/span> &lt;span class="kt">string&lt;/span> &lt;span class="p">{&lt;/span>
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> &lt;span class="k">return&lt;/span> &lt;span class="s">&amp;#34;internal not implemented&amp;#34;&lt;/span>
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">&lt;span class="p">}&lt;/span>
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">&lt;span class="kd">func&lt;/span> &lt;span class="nf">Translate&lt;/span>&lt;span class="p">(&lt;/span>&lt;span class="nx">err&lt;/span> &lt;span class="kt">error&lt;/span>&lt;span class="p">)&lt;/span> &lt;span class="kt">error&lt;/span> &lt;span class="p">{&lt;/span>
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> &lt;span class="k">if&lt;/span> &lt;span class="nx">errors&lt;/span>&lt;span class="p">.&lt;/span>&lt;span class="nf">Is&lt;/span>&lt;span class="p">(&lt;/span>&lt;span class="nx">err&lt;/span>&lt;span class="p">,&lt;/span> &lt;span class="o">&amp;amp;&lt;/span>&lt;span class="nx">NotImplementedError&lt;/span>&lt;span class="p">{})&lt;/span> &lt;span class="p">{&lt;/span>
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> &lt;span class="k">return&lt;/span> &lt;span class="nx">errors&lt;/span>&lt;span class="p">.&lt;/span>&lt;span class="nx">ErrUnsupported&lt;/span>
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> &lt;span class="p">}&lt;/span>
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> &lt;span class="k">return&lt;/span> &lt;span class="nx">err&lt;/span>
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">&lt;span class="p">}&lt;/span>
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">&lt;span class="kd">func&lt;/span> &lt;span class="nf">main&lt;/span>&lt;span class="p">()&lt;/span> &lt;span class="p">{&lt;/span>
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> &lt;span class="nx">fmt&lt;/span>&lt;span class="p">.&lt;/span>&lt;span class="nf">Printf&lt;/span>&lt;span class="p">(&lt;/span>&lt;span class="s">&amp;#34;translate1: %v\n&amp;#34;&lt;/span>&lt;span class="p">,&lt;/span> &lt;span class="nf">Translate&lt;/span>&lt;span class="p">(&lt;/span>&lt;span class="nf">DoWork1&lt;/span>&lt;span class="p">()))&lt;/span>
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> &lt;span class="nx">fmt&lt;/span>&lt;span class="p">.&lt;/span>&lt;span class="nf">Printf&lt;/span>&lt;span class="p">(&lt;/span>&lt;span class="s">&amp;#34;translate2: %v\n&amp;#34;&lt;/span>&lt;span class="p">,&lt;/span> &lt;span class="nf">Translate&lt;/span>&lt;span class="p">(&lt;/span>&lt;span class="nf">DoWork2&lt;/span>&lt;span class="p">()))&lt;/span>
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">&lt;span class="p">}&lt;/span>
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">&lt;span class="kd">func&lt;/span> &lt;span class="nf">DoWork1&lt;/span>&lt;span class="p">()&lt;/span> &lt;span class="kt">error&lt;/span> &lt;span class="p">{&lt;/span>
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> &lt;span class="k">return&lt;/span> &lt;span class="o">&amp;amp;&lt;/span>&lt;span class="nx">NotImplementedError&lt;/span>&lt;span class="p">{}&lt;/span>
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">&lt;span class="p">}&lt;/span>
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">&lt;span class="kd">func&lt;/span> &lt;span class="nf">DoWork2&lt;/span>&lt;span class="p">()&lt;/span> &lt;span class="kt">error&lt;/span> &lt;span class="p">{&lt;/span>
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> &lt;span class="nx">n&lt;/span> &lt;span class="o">:=&lt;/span> &lt;span class="kd">struct&lt;/span> &lt;span class="p">{&lt;/span>
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> &lt;span class="nx">NotImplementedError&lt;/span>
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> &lt;span class="nx">_&lt;/span> &lt;span class="kt">int&lt;/span> &lt;span class="c1">// Makes this a non-zero-sized type&lt;/span>
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> &lt;span class="p">}{}&lt;/span>
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> &lt;span class="k">return&lt;/span> &lt;span class="o">&amp;amp;&lt;/span>&lt;span class="nx">n&lt;/span>&lt;span class="p">.&lt;/span>&lt;span class="nx">NotImplementedError&lt;/span> &lt;span class="c1">// Returns pointer to embedded ZST&lt;/span>
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">&lt;span class="p">}&lt;/span>&lt;/span>&lt;/span>&lt;/code>&lt;/pre>&lt;/td>&lt;/tr>&lt;/table>
+&lt;/div>
+&lt;/div>&lt;/div>&lt;div class="hextra-code-copy-btn-container hx-opacity-0 hx-transition group-hover/code:hx-opacity-100 hx-flex hx-gap-1 hx-absolute hx-m-[11px] hx-right-0 hx-top-0">
+&lt;button
+class="hextra-code-copy-btn hx-group/copybtn hx-transition-all active:hx-opacity-50 hx-bg-primary-700/5 hx-border hx-border-black/5 hx-text-gray-600 hover:hx-text-gray-900 hx-rounded-md hx-p-1.5 dark:hx-bg-primary-300/10 dark:hx-border-white/10 dark:hx-text-gray-400 dark:hover:hx-text-gray-50"
+title="Copy code"
+>
+&lt;div class="copy-icon group-[.copied]/copybtn:hx-hidden hx-pointer-events-none hx-h-4 hx-w-4">&lt;/div>
+&lt;div class="success-icon hx-hidden group-[.copied]/copybtn:hx-block hx-pointer-events-none hx-h-4 hx-w-4">&lt;/div>
+&lt;/button>
+&lt;/div>
+&lt;/div>
+&lt;p>It&amp;rsquo;s important to understand that internally &lt;a href="https://pkg.go.dev/errors#Is" target="_blank" rel="noopener">&lt;code>errors.Is&lt;/code>&lt;/a> first attempts a
+&lt;a href="https://cs.opensource.google/go/go/&amp;#43;/refs/tags/go1.24.3:src/errors/wrap.go;l=55?q=%22err%20%3D%3D%20target%22" target="_blank" rel="noopener">direct pointer comparison&lt;/a>
+— the same pointer comparison as above when comparing concrete error values:&lt;/p>
+&lt;blockquote>
+&lt;p>&lt;em>“An error is considered to match a target if it is equal to that target”&lt;/em>&lt;/p>
+&lt;/blockquote>
+&lt;p>Arguments passed to functions that are not fully inlinable (like &lt;code>errors.Is&lt;/code>), or whose lifetime cannot be determined at
+compile time to be confined to the caller&amp;rsquo;s stack, will usually escape to the heap. As mentioned earlier, the Go runtime
+frequently optimizes them to point to a single static address.&lt;/p>
+&lt;p>This makes &lt;code>errors.Is&lt;/code> work more predictably for heap-allocated ZST pointers, but you&amp;rsquo;re still relying on an
+implementation detail rather than guaranteed behavior.&lt;/p>
+&lt;h2>A New Linter of Hope&lt;span class="hx-absolute -hx-mt-20" id="a-new-linter-of-hope">&lt;/span>
+&lt;a href="#a-new-linter-of-hope" class="subheading-anchor" aria-label="Permalink for this section">&lt;/a>&lt;/h2>&lt;p>&lt;a href="https://github.com/fillmore-labs/zerolint" target="_blank" rel="noopener">&lt;code>zerolint&lt;/code>&lt;/a> is a static analysis tool specifically designed to detect
+problematic usage patterns involving zero-sized types in Go. For example, it will flag the following:&lt;/p>
+&lt;div class="hextra-code-block hx-relative hx-mt-6 first:hx-mt-0 hx-group/code">
+&lt;div>&lt;div class="highlight">&lt;pre tabindex="0" class="chroma">&lt;code class="language-console" data-lang="console">&lt;span class="line">&lt;span class="cl">&lt;span class="go">go install fillmore-labs.com/zerolint@latest
+&lt;/span>&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">&lt;span class="go">zerolint .
+&lt;/span>&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">&lt;span class="go">&lt;/span>&lt;span class="err">
+&lt;/span>&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">&lt;span class="err">&lt;/span>&lt;span class="go">/path/to/your/project/main.go:10:7: error interface implemented on pointer to zero-sized type &amp;#34;example.com/project.NotImplementedError&amp;#34; (zl:err)
+&lt;/span>&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">&lt;span class="go">/path/to/your/project/main.go:27:6: comparison of pointer to zero-size type &amp;#34;example.com/project.NotImplementedError&amp;#34; with error interface (zl:cme)
+&lt;/span>&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">&lt;span class="go">/path/to/your/project/main.go:35:6: comparison of pointer to zero-size type &amp;#34;example.com/project.NotImplementedError&amp;#34; with error interface (zl:cme)
+&lt;/span>&lt;/span>&lt;/span>&lt;/code>&lt;/pre>&lt;/div>&lt;/div>&lt;div class="hextra-code-copy-btn-container hx-opacity-0 hx-transition group-hover/code:hx-opacity-100 hx-flex hx-gap-1 hx-absolute hx-m-[11px] hx-right-0 hx-top-0">
+&lt;button
+class="hextra-code-copy-btn hx-group/copybtn hx-transition-all active:hx-opacity-50 hx-bg-primary-700/5 hx-border hx-border-black/5 hx-text-gray-600 hover:hx-text-gray-900 hx-rounded-md hx-p-1.5 dark:hx-bg-primary-300/10 dark:hx-border-white/10 dark:hx-text-gray-400 dark:hover:hx-text-gray-50"
+title="Copy code"
+>
+&lt;div class="copy-icon group-[.copied]/copybtn:hx-hidden hx-pointer-events-none hx-h-4 hx-w-4">&lt;/div>
+&lt;div class="success-icon hx-hidden group-[.copied]/copybtn:hx-block hx-pointer-events-none hx-h-4 hx-w-4">&lt;/div>
+&lt;/button>
+&lt;/div>
+&lt;/div>
+&lt;h3>Preventing Pointer Pandemonium&lt;span class="hx-absolute -hx-mt-20" id="preventing-pointer-pandemonium">&lt;/span>
+&lt;a href="#preventing-pointer-pandemonium" class="subheading-anchor" aria-label="Permalink for this section">&lt;/a>&lt;/h3>&lt;p>This tool helps avoid the errors discussed by catching potential issues before they lead to runtime bugs, saving
+debugging time and preventing unexpected behavior in production.&lt;/p>
+&lt;ol>
+&lt;li>
+&lt;p>&lt;strong>Identifying Unreliable Comparisons:&lt;/strong> The linter flags comparisons of pointers to zero-sized types, such as
+&lt;code>errors.Is(err, &amp;amp;NotImplementedError{})&lt;/code>. By highlighting these comparisons during development or in CI/CD pipelines,
+&lt;code>zerolint&lt;/code> prompts developers to reconsider their logic. Instead of relying on pointer equality (which is unspecified
+for distinct ZSTs), developers are encouraged to use sentinel errors or reconsider whether a value type is more
+appropriate.&lt;/p>
+&lt;/li>
+&lt;li>
+&lt;p>&lt;strong>Discouraging Pointer Receivers for ZSTs:&lt;/strong> The linter warns when methods are defined on pointer receivers for
+zero-sized types (e.g., &lt;code>func (*NotImplementedError) Error() string&lt;/code>). While syntactically valid, using pointer
+receivers for ZSTs is often unnecessary and can lead to the kind of pointer-related confusion the article describes.
+Value receivers (&lt;code>func (NotImplementedError) Error() string&lt;/code>) are usually clearer and avoid any ambiguity about
+pointer identity for ZSTs, as comparisons of values of these types (not pointers to them) are straightforward.
+&lt;code>zerolint&lt;/code> encourages this safer practice.&lt;/p>
+&lt;/li>
+&lt;li>
+&lt;p>&lt;strong>Promoting Idiomatic Go:&lt;/strong> By flagging these patterns, &lt;code>zerolint&lt;/code> helps enforce idioms that lead to more robust and
+maintainable Go code. It steers developers away from relying on implementation details or unspecified behaviors of
+the compiler and runtime concerning ZST pointers.&lt;/p>
+&lt;/li>
+&lt;/ol>
+&lt;p>The kinds of bugs arising from ZST pointer comparisons can be subtle and hard to reproduce, as they might depend on
+compiler versions or specific build conditions. &lt;code>zerolint&lt;/code> catches these potential issues before they lead to runtime
+bugs.&lt;/p>
+&lt;p>In essence, &lt;code>zerolint&lt;/code> helps developers adhere to best practices, such as those discussed next regarding struct
+embedding and those summarized in this post&amp;rsquo;s conclusion.&lt;/p>
+&lt;h2>Practical Application: The Art of Embedding&lt;span class="hx-absolute -hx-mt-20" id="practical-application-the-art-of-embedding">&lt;/span>
+&lt;a href="#practical-application-the-art-of-embedding" class="subheading-anchor" aria-label="Permalink for this section">&lt;/a>&lt;/h2>&lt;p>Let&amp;rsquo;s look at some common scenarios, like struct embedding, where these principles and a tool like &lt;code>zerolint&lt;/code> become
+particularly relevant.&lt;/p>
+&lt;h3>Value Embedding: Saving Private Memory (With Free Methods)&lt;span class="hx-absolute -hx-mt-20" id="value-embedding-saving-private-memory-with-free-methods">&lt;/span>
+&lt;a href="#value-embedding-saving-private-memory-with-free-methods" class="subheading-anchor" aria-label="Permalink for this section">&lt;/a>&lt;/h3>&lt;p>Zero-sized &lt;a href="https://go.dev/ref/spec#Type_definitions" target="_blank" rel="noopener">defined types&lt;/a> can group a set of methods for a default behavior
+or interface implementation.&lt;/p>
+&lt;p>A method call on a zero-sized receiver has the same runtime behavior as a pure function call, since there&amp;rsquo;s no instance
+data to pass on the stack. Passing a ZST as a parameter is essentially free at runtime. This is different for pointer,
+though, as we will see below.&lt;/p>
+&lt;p>Assuming we want to have a variant of &lt;a href="https://pkg.go.dev/github.com/spf13/afero#OsFs" target="_blank" rel="noopener">&lt;code>afero.OsFs&lt;/code>&lt;/a> with the &lt;code>Remove&lt;/code>
+method disabled, we would do:&lt;/p>
+&lt;div class="hextra-code-block hx-relative hx-mt-6 first:hx-mt-0 hx-group/code">
+&lt;div>&lt;div class="highlight">&lt;div class="chroma">
+&lt;table class="lntable">&lt;tr>&lt;td class="lntd">
+&lt;pre tabindex="0" class="chroma">&lt;code>&lt;span class="lnt"> 1
+&lt;/span>&lt;span class="lnt"> 2
+&lt;/span>&lt;span class="lnt"> 3
+&lt;/span>&lt;span class="lnt"> 4
+&lt;/span>&lt;span class="lnt"> 5
+&lt;/span>&lt;span class="lnt"> 6
+&lt;/span>&lt;span class="lnt"> 7
+&lt;/span>&lt;span class="lnt"> 8
+&lt;/span>&lt;span class="lnt"> 9
+&lt;/span>&lt;span class="lnt">10
+&lt;/span>&lt;span class="lnt">11
+&lt;/span>&lt;span class="lnt">12
+&lt;/span>&lt;span class="lnt">13
+&lt;/span>&lt;span class="lnt">14
+&lt;/span>&lt;span class="lnt">15
+&lt;/span>&lt;span class="lnt">16
+&lt;/span>&lt;span class="lnt">17
+&lt;/span>&lt;span class="lnt">18
+&lt;/span>&lt;span class="lnt">19
+&lt;/span>&lt;span class="lnt">20
+&lt;/span>&lt;span class="lnt">21
+&lt;/span>&lt;span class="lnt">22
+&lt;/span>&lt;span class="lnt">23
+&lt;/span>&lt;span class="lnt">24
+&lt;/span>&lt;span class="lnt">25
+&lt;/span>&lt;span class="lnt">26
+&lt;/span>&lt;/code>&lt;/pre>&lt;/td>
+&lt;td class="lntd">
+&lt;pre tabindex="0" class="chroma">&lt;code class="language-go" data-lang="go">&lt;span class="line">&lt;span class="cl">&lt;span class="kn">package&lt;/span> &lt;span class="nx">main&lt;/span>
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">&lt;span class="kn">import&lt;/span> &lt;span class="p">(&lt;/span>
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> &lt;span class="s">&amp;#34;errors&amp;#34;&lt;/span>
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> &lt;span class="s">&amp;#34;fmt&amp;#34;&lt;/span>
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> &lt;span class="s">&amp;#34;unsafe&amp;#34;&lt;/span>
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> &lt;span class="s">&amp;#34;github.com/spf13/afero&amp;#34;&lt;/span>
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">&lt;span class="p">)&lt;/span>
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">&lt;span class="kd">var&lt;/span> &lt;span class="nx">ErrInvalidOperation&lt;/span> &lt;span class="p">=&lt;/span> &lt;span class="nx">errors&lt;/span>&lt;span class="p">.&lt;/span>&lt;span class="nf">New&lt;/span>&lt;span class="p">(&lt;/span>&lt;span class="s">&amp;#34;invalid operation&amp;#34;&lt;/span>&lt;span class="p">)&lt;/span>
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">&lt;span class="kd">type&lt;/span> &lt;span class="nx">ReadOnlyFS&lt;/span> &lt;span class="kd">struct&lt;/span> &lt;span class="p">{&lt;/span>
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> &lt;span class="nx">afero&lt;/span>&lt;span class="p">.&lt;/span>&lt;span class="nx">OsFs&lt;/span> &lt;span class="c1">// Embedded value - 0 bytes overhead&lt;/span>
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">&lt;span class="p">}&lt;/span>
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">&lt;span class="kd">func&lt;/span> &lt;span class="p">(&lt;/span>&lt;span class="nx">ReadOnlyFS&lt;/span>&lt;span class="p">)&lt;/span> &lt;span class="nf">Remove&lt;/span>&lt;span class="p">(&lt;/span>&lt;span class="nx">name&lt;/span> &lt;span class="kt">string&lt;/span>&lt;span class="p">)&lt;/span> &lt;span class="kt">error&lt;/span> &lt;span class="p">{&lt;/span>
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> &lt;span class="k">return&lt;/span> &lt;span class="nx">ErrInvalidOperation&lt;/span>
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">&lt;span class="p">}&lt;/span>
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">&lt;span class="kd">func&lt;/span> &lt;span class="nf">main&lt;/span>&lt;span class="p">()&lt;/span> &lt;span class="p">{&lt;/span>
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> &lt;span class="nx">a&lt;/span> &lt;span class="o">:=&lt;/span> &lt;span class="nx">ReadOnlyFS&lt;/span>&lt;span class="p">{}&lt;/span>
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> &lt;span class="nx">fmt&lt;/span>&lt;span class="p">.&lt;/span>&lt;span class="nf">Println&lt;/span>&lt;span class="p">(&lt;/span>&lt;span class="nx">unsafe&lt;/span>&lt;span class="p">.&lt;/span>&lt;span class="nf">Sizeof&lt;/span>&lt;span class="p">(&lt;/span>&lt;span class="nx">a&lt;/span>&lt;span class="p">.&lt;/span>&lt;span class="nx">OsFs&lt;/span>&lt;span class="p">))&lt;/span> &lt;span class="c1">// Prints: 0&lt;/span>
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> &lt;span class="nx">_&lt;/span>&lt;span class="p">,&lt;/span> &lt;span class="nx">_&lt;/span> &lt;span class="p">=&lt;/span> &lt;span class="nx">a&lt;/span>&lt;span class="p">.&lt;/span>&lt;span class="nf">Open&lt;/span>&lt;span class="p">(&lt;/span>&lt;span class="s">&amp;#34;test.txt&amp;#34;&lt;/span>&lt;span class="p">)&lt;/span> &lt;span class="c1">// Works perfectly&lt;/span>
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">&lt;span class="p">}&lt;/span>&lt;/span>&lt;/span>&lt;/code>&lt;/pre>&lt;/td>&lt;/tr>&lt;/table>
+&lt;/div>
+&lt;/div>&lt;/div>&lt;div class="hextra-code-copy-btn-container hx-opacity-0 hx-transition group-hover/code:hx-opacity-100 hx-flex hx-gap-1 hx-absolute hx-m-[11px] hx-right-0 hx-top-0">
+&lt;button
+class="hextra-code-copy-btn hx-group/copybtn hx-transition-all active:hx-opacity-50 hx-bg-primary-700/5 hx-border hx-border-black/5 hx-text-gray-600 hover:hx-text-gray-900 hx-rounded-md hx-p-1.5 dark:hx-bg-primary-300/10 dark:hx-border-white/10 dark:hx-text-gray-400 dark:hover:hx-text-gray-50"
+title="Copy code"
+>
+&lt;div class="copy-icon group-[.copied]/copybtn:hx-hidden hx-pointer-events-none hx-h-4 hx-w-4">&lt;/div>
+&lt;div class="success-icon hx-hidden group-[.copied]/copybtn:hx-block hx-pointer-events-none hx-h-4 hx-w-4">&lt;/div>
+&lt;/button>
+&lt;/div>
+&lt;/div>
+&lt;p>This prints 0, demonstrating that we get all the methods from &lt;code>afero.OsFs&lt;/code> with zero memory overhead.&lt;/p>
+&lt;h3>Common Pitfall: The Eight-Byte Burden &amp;amp; The Nil Panic&lt;span class="hx-absolute -hx-mt-20" id="common-pitfall-the-eight-byte-burden--the-nil-panic">&lt;/span>
+&lt;a href="#common-pitfall-the-eight-byte-burden--the-nil-panic" class="subheading-anchor" aria-label="Permalink for this section">&lt;/a>&lt;/h3>&lt;p>Now let&amp;rsquo;s see what happens when we use pointers instead:&lt;/p>
+&lt;div class="hextra-code-block hx-relative hx-mt-6 first:hx-mt-0 hx-group/code">
+&lt;div>&lt;div class="highlight">&lt;div class="chroma">
+&lt;table class="lntable">&lt;tr>&lt;td class="lntd">
+&lt;pre tabindex="0" class="chroma">&lt;code>&lt;span class="lnt"> 1
+&lt;/span>&lt;span class="lnt"> 2
+&lt;/span>&lt;span class="lnt"> 3
+&lt;/span>&lt;span class="lnt"> 4
+&lt;/span>&lt;span class="lnt"> 5
+&lt;/span>&lt;span class="lnt"> 6
+&lt;/span>&lt;span class="lnt"> 7
+&lt;/span>&lt;span class="lnt"> 8
+&lt;/span>&lt;span class="lnt"> 9
+&lt;/span>&lt;span class="lnt">10
+&lt;/span>&lt;span class="lnt">11
+&lt;/span>&lt;span class="lnt">12
+&lt;/span>&lt;span class="lnt">13
+&lt;/span>&lt;span class="lnt">14
+&lt;/span>&lt;span class="lnt">15
+&lt;/span>&lt;span class="lnt">16
+&lt;/span>&lt;span class="lnt">17
+&lt;/span>&lt;span class="lnt">18
+&lt;/span>&lt;span class="lnt">19
+&lt;/span>&lt;span class="lnt">20
+&lt;/span>&lt;span class="lnt">21
+&lt;/span>&lt;span class="lnt">22
+&lt;/span>&lt;span class="lnt">23
+&lt;/span>&lt;span class="lnt">24
+&lt;/span>&lt;span class="lnt">25
+&lt;/span>&lt;span class="lnt">26
+&lt;/span>&lt;/code>&lt;/pre>&lt;/td>
+&lt;td class="lntd">
+&lt;pre tabindex="0" class="chroma">&lt;code class="language-go" data-lang="go">&lt;span class="line">&lt;span class="cl">&lt;span class="kn">package&lt;/span> &lt;span class="nx">main&lt;/span>
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">&lt;span class="kn">import&lt;/span> &lt;span class="p">(&lt;/span>
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> &lt;span class="s">&amp;#34;errors&amp;#34;&lt;/span>
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> &lt;span class="s">&amp;#34;fmt&amp;#34;&lt;/span>
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> &lt;span class="s">&amp;#34;unsafe&amp;#34;&lt;/span>
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> &lt;span class="s">&amp;#34;github.com/spf13/afero&amp;#34;&lt;/span>
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">&lt;span class="p">)&lt;/span>
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">&lt;span class="kd">var&lt;/span> &lt;span class="nx">ErrInvalidOperation&lt;/span> &lt;span class="p">=&lt;/span> &lt;span class="nx">errors&lt;/span>&lt;span class="p">.&lt;/span>&lt;span class="nf">New&lt;/span>&lt;span class="p">(&lt;/span>&lt;span class="s">&amp;#34;invalid operation&amp;#34;&lt;/span>&lt;span class="p">)&lt;/span>
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">&lt;span class="kd">type&lt;/span> &lt;span class="nx">ReadOnlyFS&lt;/span> &lt;span class="kd">struct&lt;/span> &lt;span class="p">{&lt;/span>
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> &lt;span class="o">*&lt;/span>&lt;span class="nx">afero&lt;/span>&lt;span class="p">.&lt;/span>&lt;span class="nx">OsFs&lt;/span> &lt;span class="c1">// Embedded pointer - 8 bytes + nil pointer risk&lt;/span>
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">&lt;span class="p">}&lt;/span>
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">&lt;span class="kd">func&lt;/span> &lt;span class="p">(&lt;/span>&lt;span class="o">*&lt;/span>&lt;span class="nx">ReadOnlyFS&lt;/span>&lt;span class="p">)&lt;/span> &lt;span class="nf">Remove&lt;/span>&lt;span class="p">(&lt;/span>&lt;span class="nx">name&lt;/span> &lt;span class="kt">string&lt;/span>&lt;span class="p">)&lt;/span> &lt;span class="kt">error&lt;/span> &lt;span class="p">{&lt;/span>
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> &lt;span class="k">return&lt;/span> &lt;span class="nx">ErrInvalidOperation&lt;/span>
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">&lt;span class="p">}&lt;/span>
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">&lt;span class="kd">func&lt;/span> &lt;span class="nf">main&lt;/span>&lt;span class="p">()&lt;/span> &lt;span class="p">{&lt;/span>
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> &lt;span class="nx">a&lt;/span> &lt;span class="o">:=&lt;/span> &lt;span class="o">&amp;amp;&lt;/span>&lt;span class="nx">ReadOnlyFS&lt;/span>&lt;span class="p">{}&lt;/span>
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> &lt;span class="nx">fmt&lt;/span>&lt;span class="p">.&lt;/span>&lt;span class="nf">Println&lt;/span>&lt;span class="p">(&lt;/span>&lt;span class="nx">unsafe&lt;/span>&lt;span class="p">.&lt;/span>&lt;span class="nf">Sizeof&lt;/span>&lt;span class="p">(&lt;/span>&lt;span class="nx">a&lt;/span>&lt;span class="p">.&lt;/span>&lt;span class="nx">OsFs&lt;/span>&lt;span class="p">))&lt;/span> &lt;span class="c1">// Prints: 8 (wasted space)&lt;/span>
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> &lt;span class="nx">_&lt;/span>&lt;span class="p">,&lt;/span> &lt;span class="nx">_&lt;/span> &lt;span class="p">=&lt;/span> &lt;span class="nx">a&lt;/span>&lt;span class="p">.&lt;/span>&lt;span class="nf">Open&lt;/span>&lt;span class="p">(&lt;/span>&lt;span class="s">&amp;#34;test.txt&amp;#34;&lt;/span>&lt;span class="p">)&lt;/span> &lt;span class="c1">// Panics! (nil pointer)&lt;/span>
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">&lt;span class="p">}&lt;/span>&lt;/span>&lt;/span>&lt;/code>&lt;/pre>&lt;/td>&lt;/tr>&lt;/table>
+&lt;/div>
+&lt;/div>&lt;/div>&lt;div class="hextra-code-copy-btn-container hx-opacity-0 hx-transition group-hover/code:hx-opacity-100 hx-flex hx-gap-1 hx-absolute hx-m-[11px] hx-right-0 hx-top-0">
+&lt;button
+class="hextra-code-copy-btn hx-group/copybtn hx-transition-all active:hx-opacity-50 hx-bg-primary-700/5 hx-border hx-border-black/5 hx-text-gray-600 hover:hx-text-gray-900 hx-rounded-md hx-p-1.5 dark:hx-bg-primary-300/10 dark:hx-border-white/10 dark:hx-text-gray-400 dark:hover:hx-text-gray-50"
+title="Copy code"
+>
+&lt;div class="copy-icon group-[.copied]/copybtn:hx-hidden hx-pointer-events-none hx-h-4 hx-w-4">&lt;/div>
+&lt;div class="success-icon hx-hidden group-[.copied]/copybtn:hx-block hx-pointer-events-none hx-h-4 hx-w-4">&lt;/div>
+&lt;/button>
+&lt;/div>
+&lt;/div>
+&lt;p>This approach has two problems:&lt;/p>
+&lt;p>First, adding a level of indirection to zero-sized types negates their primary memory benefit. A pointer to a ZST itself
+consumes memory (typically 8 bytes on a 64-bit system for the pointer itself), whereas the ZST value consumes zero
+bytes. Since the pointer could mostly be the address of &lt;code>runtime.zerobase&lt;/code> or &lt;code>nil&lt;/code>, we waste 8 bytes for very little
+information.&lt;/p>
+&lt;p>Second, the embedded pointer &lt;code>OsFs&lt;/code> is &lt;code>nil&lt;/code> because it&amp;rsquo;s uninitialized. While Go allows calling methods on &lt;code>nil&lt;/code>
+receivers if the method is defined to handle nil (e.g., by checking if the receiver is nil), in this case,
+&lt;code>a.Open(&amp;quot;test.txt&amp;quot;)&lt;/code> attempts to dereference the &lt;code>nil&lt;/code> pointer (as &lt;code>Open&lt;/code> has a value receiver), causing a runtime
+panic.&lt;/p>
+&lt;h3>Interface Evolution: gRPC-Go Case Study&lt;span class="hx-absolute -hx-mt-20" id="interface-evolution-grpc-go-case-study">&lt;/span>
+&lt;a href="#interface-evolution-grpc-go-case-study" class="subheading-anchor" aria-label="Permalink for this section">&lt;/a>&lt;/h3>&lt;p>ZSTs are excellent for providing default implementations for interfaces, especially when embedded by value. Since an
+embedded ZST occupies 0 bytes, it adds no size to the surrounding struct, so there&amp;rsquo;s no overhead.&lt;/p>
+&lt;p>A prominent example of this is found in gRPC for Go, specifically in server implementations. To ensure forward
+compatibility, &lt;code>UnimplementedXXXServer&lt;/code> structs are provided:&lt;/p>
+&lt;div class="hextra-code-block hx-relative hx-mt-6 first:hx-mt-0 hx-group/code">
+&lt;div class="filename not-prose" dir="auto">generated.go&lt;/div>&lt;div>&lt;div class="highlight">&lt;pre tabindex="0" class="chroma">&lt;code class="language-go" data-lang="go">&lt;span class="line">&lt;span class="cl">&lt;span class="c1">// UnimplementedXXXServer must be embedded to have&lt;/span>
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">&lt;span class="c1">// forward compatible implementations.&lt;/span>
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">&lt;span class="c1">//&lt;/span>
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">&lt;span class="c1">// NOTE: this should be embedded by value instead of pointer to avoid a nil&lt;/span>
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">&lt;span class="c1">// pointer dereference when methods are called.&lt;/span>
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">&lt;span class="kd">type&lt;/span> &lt;span class="nx">UnimplementedXXXServer&lt;/span> &lt;span class="kd">struct&lt;/span>&lt;span class="p">{}&lt;/span>
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">&lt;span class="kd">func&lt;/span> &lt;span class="p">(&lt;/span>&lt;span class="nx">UnimplementedXXXServer&lt;/span>&lt;span class="p">)&lt;/span> &lt;span class="nf">GetUser&lt;/span>&lt;span class="p">(&lt;/span>&lt;span class="nx">context&lt;/span>&lt;span class="p">.&lt;/span>&lt;span class="nx">Context&lt;/span>&lt;span class="p">,&lt;/span> &lt;span class="o">*&lt;/span>&lt;span class="nx">GetUserRequest&lt;/span>&lt;span class="p">)&lt;/span> &lt;span class="p">(&lt;/span>&lt;span class="o">*&lt;/span>&lt;span class="nx">GetUserResponse&lt;/span>&lt;span class="p">,&lt;/span> &lt;span class="kt">error&lt;/span>&lt;span class="p">)&lt;/span> &lt;span class="p">{&lt;/span>
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> &lt;span class="k">return&lt;/span> &lt;span class="kc">nil&lt;/span>&lt;span class="p">,&lt;/span> &lt;span class="nx">status&lt;/span>&lt;span class="p">.&lt;/span>&lt;span class="nf">Errorf&lt;/span>&lt;span class="p">(&lt;/span>&lt;span class="nx">codes&lt;/span>&lt;span class="p">.&lt;/span>&lt;span class="nx">Unimplemented&lt;/span>&lt;span class="p">,&lt;/span> &lt;span class="s">&amp;#34;method GetUser not implemented&amp;#34;&lt;/span>&lt;span class="p">)&lt;/span>
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">&lt;span class="p">}&lt;/span>&lt;/span>&lt;/span>&lt;/code>&lt;/pre>&lt;/div>&lt;/div>&lt;div class="hextra-code-copy-btn-container hx-opacity-0 hx-transition group-hover/code:hx-opacity-100 hx-flex hx-gap-1 hx-absolute hx-m-[11px] hx-right-0 hx-top-8">
+&lt;button
+class="hextra-code-copy-btn hx-group/copybtn hx-transition-all active:hx-opacity-50 hx-bg-primary-700/5 hx-border hx-border-black/5 hx-text-gray-600 hover:hx-text-gray-900 hx-rounded-md hx-p-1.5 dark:hx-bg-primary-300/10 dark:hx-border-white/10 dark:hx-text-gray-400 dark:hover:hx-text-gray-50"
+title="Copy code"
+>
+&lt;div class="copy-icon group-[.copied]/copybtn:hx-hidden hx-pointer-events-none hx-h-4 hx-w-4">&lt;/div>
+&lt;div class="success-icon hx-hidden group-[.copied]/copybtn:hx-block hx-pointer-events-none hx-h-4 hx-w-4">&lt;/div>
+&lt;/button>
+&lt;/div>
+&lt;/div>
+&lt;div class="hextra-code-block hx-relative hx-mt-6 first:hx-mt-0 hx-group/code">
+&lt;div class="filename not-prose" dir="auto">implementation.go&lt;/div>&lt;div>&lt;div class="highlight">&lt;pre tabindex="0" class="chroma">&lt;code class="language-go" data-lang="go">&lt;span class="line">&lt;span class="cl">&lt;span class="kd">type&lt;/span> &lt;span class="nx">XXXServer&lt;/span> &lt;span class="kd">struct&lt;/span> &lt;span class="p">{&lt;/span>
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> &lt;span class="nx">UnimplementedXXXServer&lt;/span>
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">&lt;span class="p">}&lt;/span>
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">&lt;span class="kd">func&lt;/span> &lt;span class="p">(&lt;/span>&lt;span class="nx">XXXServer&lt;/span>&lt;span class="p">)&lt;/span> &lt;span class="nf">GetUser&lt;/span>&lt;span class="p">(&lt;/span>&lt;span class="nx">context&lt;/span>&lt;span class="p">.&lt;/span>&lt;span class="nx">Context&lt;/span>&lt;span class="p">,&lt;/span> &lt;span class="o">*&lt;/span>&lt;span class="nx">GetUserRequest&lt;/span>&lt;span class="p">)&lt;/span> &lt;span class="p">(&lt;/span>&lt;span class="o">*&lt;/span>&lt;span class="nx">GetUserResponse&lt;/span>&lt;span class="p">,&lt;/span> &lt;span class="kt">error&lt;/span>&lt;span class="p">)&lt;/span> &lt;span class="p">{&lt;/span>
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> &lt;span class="o">...&lt;/span>
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">&lt;span class="p">}&lt;/span>&lt;/span>&lt;/span>&lt;/code>&lt;/pre>&lt;/div>&lt;/div>&lt;div class="hextra-code-copy-btn-container hx-opacity-0 hx-transition group-hover/code:hx-opacity-100 hx-flex hx-gap-1 hx-absolute hx-m-[11px] hx-right-0 hx-top-8">
+&lt;button
+class="hextra-code-copy-btn hx-group/copybtn hx-transition-all active:hx-opacity-50 hx-bg-primary-700/5 hx-border hx-border-black/5 hx-text-gray-600 hover:hx-text-gray-900 hx-rounded-md hx-p-1.5 dark:hx-bg-primary-300/10 dark:hx-border-white/10 dark:hx-text-gray-400 dark:hover:hx-text-gray-50"
+title="Copy code"
+>
+&lt;div class="copy-icon group-[.copied]/copybtn:hx-hidden hx-pointer-events-none hx-h-4 hx-w-4">&lt;/div>
+&lt;div class="success-icon hx-hidden group-[.copied]/copybtn:hx-block hx-pointer-events-none hx-h-4 hx-w-4">&lt;/div>
+&lt;/button>
+&lt;/div>
+&lt;/div>
+&lt;p>For some background see gRPC-Go&amp;rsquo;s &lt;a href="https://github.com/grpc/grpc-go/issues/2318" target="_blank" rel="noopener">issue 2318&lt;/a> and
+&lt;a href="https://github.com/grpc/grpc-go/issues/3669" target="_blank" rel="noopener">issue 3669&lt;/a>.&lt;/p>
+&lt;h2>The Tao of ZST: A Guide to Robust Go&lt;span class="hx-absolute -hx-mt-20" id="the-tao-of-zst-a-guide-to-robust-go">&lt;/span>
+&lt;a href="#the-tao-of-zst-a-guide-to-robust-go" class="subheading-anchor" aria-label="Permalink for this section">&lt;/a>&lt;/h2>&lt;p>Zero-sized types (ZSTs) are a Go feature offering memory efficiency and powerful design mechanisms. However, as we&amp;rsquo;ve
+seen, their interaction with pointers can lead to subtle, hard-to-diagnose bugs if not handled with care. Relying on
+specific compiler or runtime behaviors (like all escaped ZST pointers resolving to &lt;code>runtime.zerobase&lt;/code>) for pointer
+comparisons is a path to fragile code.&lt;/p>
+&lt;p>To harness the benefits of ZSTs while avoiding the pitfalls, keep these core principles in mind:&lt;/p>
+&lt;ol>
+&lt;li>
+&lt;p>&lt;strong>Embrace Values, Eschew Pointers:&lt;/strong> Whenever possible, use ZSTs as direct values (e.g., &lt;code>myZST&lt;/code>) rather than
+pointers to them (&lt;code>&amp;amp;myZST&lt;/code>). This approach completely avoids the ambiguity of ZST pointer comparisons.&lt;/p>
+&lt;/li>
+&lt;li>
+&lt;p>&lt;strong>Value Receivers are Preferred:&lt;/strong> Define methods on value receivers (e.g., &lt;code>func (z MyZST) Method()&lt;/code>) for ZSTs.
+Pointer receivers (e.g., &lt;code>func (z *MyZST) Method()&lt;/code>) are rarely necessary for ZSTs and can reintroduce issues with
+pointer comparisons.&lt;/p>
+&lt;/li>
+&lt;li>
+&lt;p>&lt;strong>Embed Values, Not Pointers:&lt;/strong> When composing structs, embed ZSTs directly (e.g., embed &lt;code>MyZST&lt;/code>) to maintain their
+zero memory overhead benefit. Embedding pointers to ZSTs (embed &lt;code>*MyZST&lt;/code>) negates this by adding pointer overhead and
+the risk of nil pointers.&lt;/p>
+&lt;/li>
+&lt;li>
+&lt;p>&lt;strong>Be Mindful of ZSTs When Designing API Contracts:&lt;/strong> For example, use functional options instead of pointer-based
+configuration for zero-sized option structs.&lt;/p>
+&lt;/li>
+&lt;li>
+&lt;p>&lt;strong>Mind API Boundaries:&lt;/strong> The primary legitimate use case for pointers to ZSTs arises when an external API you must
+interact with explicitly requires a pointer receiver or argument. In such instances, the choice is driven by
+compatibility.&lt;/p>
+&lt;/li>
+&lt;li>
+&lt;p>&lt;strong>Leverage Static Analysis:&lt;/strong> You don&amp;rsquo;t have to navigate these nuances alone. Tools like
+&lt;a href="https://github.com/fillmore-labs/zerolint" target="_blank" rel="noopener">&lt;code>zerolint&lt;/code>&lt;/a> are invaluable for automatically flagging problematic ZST
+pointer usage in your codebase, guiding you towards safer and more idiomatic Go practices.&lt;/p>
+&lt;/li>
+&lt;/ol>
+&lt;p>The key insight is that zero-sized types are powerful as values but risky and wasteful as pointers. Understanding this
+distinction will save you from subtle, hard-to-debug issues that can vary between compiler versions and build
+conditions.&lt;/p></description></item></channel></rss>
