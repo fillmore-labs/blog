@@ -1,7 +1,8 @@
 <rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom"><channel><title>Fillmore Labs Blog – Java</title><link>https://blog.fillmore-labs.com/tags/java/</link><description>Recent content in Java on Fillmore Labs Blog</description><generator>Hugo -- gohugo.io</generator><language>en-US</language><lastBuildDate>Wed, 10 Apr 2024 12:00:00 +0200</lastBuildDate><atom:link href="https://blog.fillmore-labs.com/tags/java/index.xml" rel="self" type="application/rss+xml"/><item><title>Java Structured Concurrency</title><link>https://blog.fillmore-labs.com/posts/javavirtualthreads-2/</link><pubDate>Wed, 10 Apr 2024 12:00:00 +0200</pubDate><guid>https://blog.fillmore-labs.com/posts/javavirtualthreads-2/</guid><description>
-&lt;p>&amp;hellip; continued from the &lt;a href="javavirtualthreads-1" >previous post&lt;/a>.&lt;/p>
+&lt;p>&amp;hellip; continued from the &lt;a href="https://blog.fillmore-labs.com/posts/javavirtualthreads-1" >previous post&lt;/a>.&lt;/p>
 &lt;h2>Structured Concurrency Preview&lt;span class="hx-absolute -hx-mt-20" id="structured-concurrency-preview">&lt;/span>
-&lt;a href="#structured-concurrency-preview" class="subheading-anchor" aria-label="Permalink for this section">&lt;/a>&lt;/h2>&lt;p>I’ve written &lt;a href="structured-1" >about structured concurrency&lt;/a>, and Java has a preview API&lt;sup id="fnref:1">&lt;a href="#fn:1" class="footnote-ref" role="doc-noteref">1&lt;/a>&lt;/sup> &lt;code>StructuredTaskScope&lt;/code>&lt;sup id="fnref:2">&lt;a href="#fn:2" class="footnote-ref" role="doc-noteref">2&lt;/a>&lt;/sup>:&lt;/p>
+&lt;a href="#structured-concurrency-preview" class="subheading-anchor" aria-label="Permalink for this section">&lt;/a>&lt;/h2>&lt;p>I’ve written &lt;a href="https://blog.fillmore-labs.com/posts/structured-1" >about structured concurrency&lt;/a>, and Java has a preview API&lt;sup id="fnref:1">&lt;a href="#fn:1" class="footnote-ref" role="doc-noteref">1&lt;/a>&lt;/sup>
+&lt;code>StructuredTaskScope&lt;/code>&lt;sup id="fnref:2">&lt;a href="#fn:2" class="footnote-ref" role="doc-noteref">2&lt;/a>&lt;/sup>:&lt;/p>
 &lt;div class="hextra-code-block hx-relative hx-mt-6 first:hx-mt-0 hx-group/code">
 &lt;div>&lt;div class="highlight">&lt;div class="chroma">
 &lt;table class="lntable">&lt;tr>&lt;td class="lntd">
@@ -103,7 +104,7 @@ title="Copy code"
 &lt;p>&lt;img src="jvm-6.png" alt="flame graph of run 6" loading="lazy" />&lt;/p>
 &lt;p>So, &lt;code>Thread.interrupted()&lt;/code> is not free (it&amp;rsquo;s the blue areas on top), but performant enough to call it often.&lt;/p>
 &lt;h3>Another Example&lt;span class="hx-absolute -hx-mt-20" id="another-example">&lt;/span>
-&lt;a href="#another-example" class="subheading-anchor" aria-label="Permalink for this section">&lt;/a>&lt;/h3>&lt;p>Mirroring our &lt;a href="structured-1" >Go experiments&lt;/a> we define a task and a function calling it:&lt;/p>
+&lt;a href="#another-example" class="subheading-anchor" aria-label="Permalink for this section">&lt;/a>&lt;/h3>&lt;p>Mirroring our &lt;a href="https://blog.fillmore-labs.com/posts/structured-1" >Go experiments&lt;/a> we define a task and a function calling it:&lt;/p>
 &lt;div class="hextra-code-block hx-relative hx-mt-6 first:hx-mt-0 hx-group/code">
 &lt;div>&lt;div class="highlight">&lt;div class="chroma">
 &lt;table class="lntable">&lt;tr>&lt;td class="lntd">
@@ -253,8 +254,8 @@ whether the canceler is aware of them.&lt;/p>
 &lt;/li>
 &lt;/ol>
 &lt;/div></description></item><item><title>Java Virtual Threads</title><link>https://blog.fillmore-labs.com/posts/javavirtualthreads-1/</link><pubDate>Tue, 09 Apr 2024 12:00:00 +0200</pubDate><guid>https://blog.fillmore-labs.com/posts/javavirtualthreads-1/</guid><description>
-&lt;p>Reading my &lt;a href="https://blog.fillmore-labs.com/series/go-concurrency" >articles about Go concurrency&lt;/a> a friend asked me whether one could something similar
-in Java.&lt;/p>
+&lt;p>Reading my &lt;a href="https://blog.fillmore-labs.com/posts//series/go-concurrency" >articles about Go concurrency&lt;/a> a friend asked me whether one could something
+similar in Java.&lt;/p>
 &lt;h2>Project Loom&lt;span class="hx-absolute -hx-mt-20" id="project-loom">&lt;/span>
 &lt;a href="#project-loom" class="subheading-anchor" aria-label="Permalink for this section">&lt;/a>&lt;/h2>&lt;p>Since the release JDK 21 Java has virtual threads&lt;sup id="fnref:1">&lt;a href="#fn:1" class="footnote-ref" role="doc-noteref">1&lt;/a>&lt;/sup>:&lt;/p>
 &lt;div class="hextra-code-block hx-relative hx-mt-6 first:hx-mt-0 hx-group/code">
@@ -285,7 +286,7 @@ title="Copy code"
 &lt;/div>
 &lt;/div>
 &lt;h3>A Simple Example&lt;span class="hx-absolute -hx-mt-20" id="a-simple-example">&lt;/span>
-&lt;a href="#a-simple-example" class="subheading-anchor" aria-label="Permalink for this section">&lt;/a>&lt;/h3>&lt;p>Like &lt;a href="goroutines-1" >our experiments in Go&lt;/a>, we implement&lt;sup id="fnref:2">&lt;a href="#fn:2" class="footnote-ref" role="doc-noteref">2&lt;/a>&lt;/sup> a simple recursive calculation of the
+&lt;a href="#a-simple-example" class="subheading-anchor" aria-label="Permalink for this section">&lt;/a>&lt;/h3>&lt;p>Like &lt;a href="https://blog.fillmore-labs.com/posts/goroutines-1" >our experiments in Go&lt;/a>, we implement&lt;sup id="fnref:2">&lt;a href="#fn:2" class="footnote-ref" role="doc-noteref">2&lt;/a>&lt;/sup> a simple recursive calculation of the
 &lt;a href="https://en.wikipedia.org/wiki/Fibonacci_sequence" target="_blank" rel="noopener">Fibonacci sequence&lt;/a>:&lt;/p>
 &lt;div class="hextra-code-block hx-relative hx-mt-6 first:hx-mt-0 hx-group/code">
 &lt;div>&lt;div class="highlight">&lt;div class="chroma">
@@ -679,7 +680,7 @@ the small initial stack size of virtual threads.&lt;/p>
 &lt;p>Seeing Java adopt virtual threads is exciting. However, it&amp;rsquo;s unlikely that Java code will resemble Go or Erlang soon.
 Developing correct, efficient concurrent code is much more than just replacing one threading model with another&lt;sup id="fnref:4">&lt;a href="#fn:4" class="footnote-ref" role="doc-noteref">4&lt;/a>&lt;/sup>,
 also there are fundamental differences in existing (standard) libraries.&lt;/p>
-&lt;p>&amp;hellip; continued in &lt;a href="javavirtualthreads-2" >part two&lt;/a>.&lt;/p>
+&lt;p>&amp;hellip; continued in &lt;a href="https://blog.fillmore-labs.com/posts/javavirtualthreads-2" >part two&lt;/a>.&lt;/p>
 &lt;div class="footnotes" role="doc-endnotes">
 &lt;hr>
 &lt;ol>

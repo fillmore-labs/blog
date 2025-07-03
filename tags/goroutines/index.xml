@@ -375,8 +375,8 @@ title="Copy code"
 testable.&lt;/p>
 &lt;h2>Summary&lt;span class="hx-absolute -hx-mt-20" id="summary">&lt;/span>
 &lt;a href="#summary" class="subheading-anchor" aria-label="Permalink for this section">&lt;/a>&lt;/h2>&lt;p>We replaced asynchronous code with a race condition with a synchronous, thread safe implementation. Like in
-&lt;a href="structured-2/#refactor-and-separate-concerns" >previous posts&lt;/a>, refactoring and separation of concerns helps structuring
-our tasks and avoid errors.&lt;/p>
+&lt;a href="https://blog.fillmore-labs.com/posts/structured-2/#refactor-and-separate-concerns" >previous posts&lt;/a>, refactoring and separation of concerns helps
+structuring our tasks and avoid errors.&lt;/p>
 &lt;div class="footnotes" role="doc-endnotes">
 &lt;hr>
 &lt;ol>
@@ -390,8 +390,8 @@ our tasks and avoid errors.&lt;/p>
 &lt;/ol>
 &lt;/div></description></item><item><title>Concurrency Bugs</title><link>https://blog.fillmore-labs.com/posts/concurrency-bugs-1/</link><pubDate>Mon, 15 Apr 2024 12:00:00 +0200</pubDate><guid>https://blog.fillmore-labs.com/posts/concurrency-bugs-1/</guid><description>
 &lt;h2>Errors Observed in Real-world Usage&lt;span class="hx-absolute -hx-mt-20" id="errors-observed-in-real-world-usage">&lt;/span>
-&lt;a href="#errors-observed-in-real-world-usage" class="subheading-anchor" aria-label="Permalink for this section">&lt;/a>&lt;/h2>&lt;p>In “&lt;a href="goroutines-4/#problems-with-concurrency" >Problems With Concurrency&lt;/a>” I mentioned that I see concurrency issues a
-lot. Let&amp;rsquo;s look at something I recently found in production:&lt;/p>
+&lt;a href="#errors-observed-in-real-world-usage" class="subheading-anchor" aria-label="Permalink for this section">&lt;/a>&lt;/h2>&lt;p>In “&lt;a href="https://blog.fillmore-labs.com/posts/goroutines-4/#problems-with-concurrency" >Problems With Concurrency&lt;/a>” I mentioned that I see concurrency
+issues a lot. Let&amp;rsquo;s look at something I recently found in production:&lt;/p>
 &lt;div class="hextra-code-block hx-relative hx-mt-6 first:hx-mt-0 hx-group/code">
 &lt;div>&lt;div class="highlight">&lt;div class="chroma">
 &lt;table class="lntable">&lt;tr>&lt;td class="lntd">
@@ -523,9 +523,9 @@ title="Copy code"
 &lt;/div>
 &lt;/div>
 &lt;p>Try it on the &lt;a href="https://go.dev/play/p/_iFs1QaznEx" target="_blank" rel="noopener">Go Playground&lt;/a>.&lt;/p>
-&lt;p>This code is pretty similar to the one in “&lt;a href="goroutines-4/#problems-with-concurrency" >Problems With Concurrency&lt;/a>” before
-it was modified in the blog. It makes nearly that same mistake and deadlocks on error conditions. Obviously&lt;sup id="fnref:1">&lt;a href="#fn:1" class="footnote-ref" role="doc-noteref">1&lt;/a>&lt;/sup>, the fix
-is not to make this function more complex and use &lt;code>errs := make(chan error, 3)&lt;/code>.&lt;/p>
+&lt;p>This code is pretty similar to the one in “&lt;a href="https://blog.fillmore-labs.com/posts/goroutines-4/#problems-with-concurrency" >Problems With Concurrency&lt;/a>”
+before it was modified in the blog. It makes nearly that same mistake and deadlocks on error conditions. Obviously&lt;sup id="fnref:1">&lt;a href="#fn:1" class="footnote-ref" role="doc-noteref">1&lt;/a>&lt;/sup>,
+the fix is not to make this function more complex and use &lt;code>errs := make(chan error, 3)&lt;/code>.&lt;/p>
 &lt;h3>What Are the Issues?&lt;span class="hx-absolute -hx-mt-20" id="what-are-the-issues">&lt;/span>
 &lt;a href="#what-are-the-issues" class="subheading-anchor" aria-label="Permalink for this section">&lt;/a>&lt;/h3>&lt;p>This code very nicely demonstrates what you get when you start with concurrent code without thinking about the design.&lt;/p>
 &lt;p>Let first fix it, then analyze its problems. The task is divided into three independent calculations, where failure in
@@ -646,11 +646,11 @@ need for error checking shouldn&amp;rsquo;t be retrospectively fixed by a channe
 &lt;hr>
 &lt;ol>
 &lt;li id="fn:1">
-&lt;p>As &lt;a href="goroutines-4/#analysis" >mentioned before&lt;/a>, addition of magic numbers reduces maintainability.&amp;#160;&lt;a href="#fnref:1" class="footnote-backref" role="doc-backlink">&amp;#x21a9;&amp;#xfe0e;&lt;/a>&lt;/p>
+&lt;p>As &lt;a href="https://blog.fillmore-labs.com/posts/goroutines-4/#analysis" >mentioned before&lt;/a>, addition of magic numbers reduces maintainability.&amp;#160;&lt;a href="#fnref:1" class="footnote-backref" role="doc-backlink">&amp;#x21a9;&amp;#xfe0e;&lt;/a>&lt;/p>
 &lt;/li>
 &lt;/ol>
 &lt;/div></description></item><item><title>How to Write Concurrent Go Code</title><link>https://blog.fillmore-labs.com/posts/structured-5/</link><pubDate>Thu, 28 Mar 2024 12:00:00 +0100</pubDate><guid>https://blog.fillmore-labs.com/posts/structured-5/</guid><description>
-&lt;p>&amp;hellip; continued from the &lt;a href="structured-4" >previous post&lt;/a>.&lt;/p>
+&lt;p>&amp;hellip; continued from the &lt;a href="https://blog.fillmore-labs.com/posts/structured-4" >previous post&lt;/a>.&lt;/p>
 &lt;p>Shuffling through Stack Overflow questions I realized that there is one point I tried to make clear, but didn’t
 emphasize enough:&lt;/p>
 &lt;h2>Write Synchronous Code First&lt;span class="hx-absolute -hx-mt-20" id="write-synchronous-code-first">&lt;/span>
@@ -904,7 +904,7 @@ lot of code written would benefit.&lt;/p>
 &lt;a href="#summary" class="subheading-anchor" aria-label="Permalink for this section">&lt;/a>&lt;/h2>&lt;p>Most of the code should be written synchronously first and should keep synchronous APIs as much as possible. Function
 literals are a great way to separate concurrency from subtasks.&lt;/p>
 &lt;p>&amp;hellip; to be continued.&lt;/p></description></item><item><title>Existing Libraries</title><link>https://blog.fillmore-labs.com/posts/structured-4/</link><pubDate>Wed, 27 Mar 2024 12:00:00 +0100</pubDate><guid>https://blog.fillmore-labs.com/posts/structured-4/</guid><description>
-&lt;p>&amp;hellip; continued from the &lt;a href="structured-3" >previous post&lt;/a>.&lt;/p>
+&lt;p>&amp;hellip; continued from the &lt;a href="https://blog.fillmore-labs.com/posts/structured-3" >previous post&lt;/a>.&lt;/p>
 &lt;h3>Two Popular Choices&lt;span class="hx-absolute -hx-mt-20" id="two-popular-choices">&lt;/span>
 &lt;a href="#two-popular-choices" class="subheading-anchor" aria-label="Permalink for this section">&lt;/a>&lt;/h3>&lt;p>Perhaps the most popular exisiting library is
 &lt;a href="https://pkg.go.dev/golang.org/x/sync/errgroup" target="_blank" rel="noopener">golang.org/x/sync/errgroup&lt;/a> by Bryan C. Mills:&lt;/p>
@@ -1050,8 +1050,8 @@ title="Copy code"
 management without leaking resources. The managing goroutine must not exit until all its child goroutines complete.
 Additionally, structured concurrency guarantees thorough error reporting, preventing any errors from being overlooked or
 disregarded.&lt;/p>
-&lt;p>&amp;hellip; continued in the &lt;a href="structured-5" >next post&lt;/a>.&lt;/p></description></item><item><title>Comparison to Our Original Approach</title><link>https://blog.fillmore-labs.com/posts/structured-3/</link><pubDate>Tue, 26 Mar 2024 12:00:00 +0100</pubDate><guid>https://blog.fillmore-labs.com/posts/structured-3/</guid><description>
-&lt;p>&amp;hellip; continued from the &lt;a href="structured-2" >previous post&lt;/a>.&lt;/p>
+&lt;p>&amp;hellip; continued in the &lt;a href="https://blog.fillmore-labs.com/posts/structured-5" >next post&lt;/a>.&lt;/p></description></item><item><title>Comparison to Our Original Approach</title><link>https://blog.fillmore-labs.com/posts/structured-3/</link><pubDate>Tue, 26 Mar 2024 12:00:00 +0100</pubDate><guid>https://blog.fillmore-labs.com/posts/structured-3/</guid><description>
+&lt;p>&amp;hellip; continued from the &lt;a href="https://blog.fillmore-labs.com/posts/structured-2" >previous post&lt;/a>.&lt;/p>
 &lt;h3>Refactor Our Original Approach&lt;span class="hx-absolute -hx-mt-20" id="refactor-our-original-approach">&lt;/span>
 &lt;a href="#refactor-our-original-approach" class="subheading-anchor" aria-label="Permalink for this section">&lt;/a>&lt;/h3>&lt;p>What we have done to the previously can also be done to the approach using an error channel:&lt;/p>
 &lt;div class="hextra-code-block hx-relative hx-mt-6 first:hx-mt-0 hx-group/code">
@@ -1211,8 +1211,8 @@ title="Copy code"
 difference is that we have to call all subtasks asynchronously, since we need &lt;code>Group.Wait&lt;/code> working on the error channel.&lt;/p>
 &lt;h2>Summary&lt;span class="hx-absolute -hx-mt-20" id="summary">&lt;/span>
 &lt;a href="#summary" class="subheading-anchor" aria-label="Permalink for this section">&lt;/a>&lt;/h2>&lt;p>We have seen two approaches to structured concurrency with nearly identical APIs.&lt;/p>
-&lt;p>&amp;hellip; continued in the &lt;a href="structured-4" >next post&lt;/a>.&lt;/p></description></item><item><title>An Alternative Approach</title><link>https://blog.fillmore-labs.com/posts/structured-2/</link><pubDate>Mon, 25 Mar 2024 12:00:00 +0100</pubDate><guid>https://blog.fillmore-labs.com/posts/structured-2/</guid><description>
-&lt;p>&amp;hellip; continued from the &lt;a href="structured-1" >previous post&lt;/a>.&lt;/p>
+&lt;p>&amp;hellip; continued in the &lt;a href="https://blog.fillmore-labs.com/posts/structured-4" >next post&lt;/a>.&lt;/p></description></item><item><title>An Alternative Approach</title><link>https://blog.fillmore-labs.com/posts/structured-2/</link><pubDate>Mon, 25 Mar 2024 12:00:00 +0100</pubDate><guid>https://blog.fillmore-labs.com/posts/structured-2/</guid><description>
+&lt;p>&amp;hellip; continued from the &lt;a href="https://blog.fillmore-labs.com/posts/structured-1" >previous post&lt;/a>.&lt;/p>
 &lt;h2>Do Not Communicate by Sharing Memory; Instead, Share Memory by Communicating&lt;sup id="fnref:1">&lt;a href="#fn:1" class="footnote-ref" role="doc-noteref">1&lt;/a>&lt;/sup>&lt;span class="hx-absolute -hx-mt-20" id="do-not-communicate-by-sharing-memory-instead-share-memory-by-communicating">&lt;/span>
 &lt;a href="#do-not-communicate-by-sharing-memory-instead-share-memory-by-communicating" class="subheading-anchor" aria-label="Permalink for this section">&lt;/a>&lt;/h2>&lt;blockquote>
 &lt;p>This approach can be taken too far. [&amp;hellip;] But as a high-level approach, using channels to control access makes it
@@ -1533,7 +1533,7 @@ testability.&lt;/p>
 &lt;h2>Summary&lt;span class="hx-absolute -hx-mt-20" id="summary">&lt;/span>
 &lt;a href="#summary" class="subheading-anchor" aria-label="Permalink for this section">&lt;/a>&lt;/h2>&lt;p>Separating orchestration from the processing code, we can reach simplified structured concurrency with improved
 readability while eliminating some sources of resource leaks.&lt;/p>
-&lt;p>&amp;hellip; continued in the &lt;a href="structured-3" >next post&lt;/a>.&lt;/p>
+&lt;p>&amp;hellip; continued in the &lt;a href="https://blog.fillmore-labs.com/posts/structured-3" >next post&lt;/a>.&lt;/p>
 &lt;div class="footnotes" role="doc-endnotes">
 &lt;hr>
 &lt;ol>
@@ -1543,10 +1543,10 @@ readability while eliminating some sources of resource leaks.&lt;/p>
 &lt;/li>
 &lt;/ol>
 &lt;/div></description></item><item><title>Structured Concurrency</title><link>https://blog.fillmore-labs.com/posts/structured-1/</link><pubDate>Fri, 22 Mar 2024 12:00:00 +0100</pubDate><guid>https://blog.fillmore-labs.com/posts/structured-1/</guid><description>
-&lt;p>&amp;hellip; continued from the &lt;a href="goroutines-4" >previous post&lt;/a>.&lt;/p>
+&lt;p>&amp;hellip; continued from the &lt;a href="https://blog.fillmore-labs.com/posts/goroutines-4" >previous post&lt;/a>.&lt;/p>
 &lt;h3>Different Categories of Concurrency&lt;span class="hx-absolute -hx-mt-20" id="different-categories-of-concurrency">&lt;/span>
-&lt;a href="#different-categories-of-concurrency" class="subheading-anchor" aria-label="Permalink for this section">&lt;/a>&lt;/h3>&lt;p>When recalling the &lt;a href="goroutines-4" >previous article&lt;/a>, a task was subdivided into three subtasks, all working towards a
-common objective (specifically, merging contributors).&lt;/p>
+&lt;a href="#different-categories-of-concurrency" class="subheading-anchor" aria-label="Permalink for this section">&lt;/a>&lt;/h3>&lt;p>When recalling the &lt;a href="https://blog.fillmore-labs.com/posts/goroutines-4" >previous article&lt;/a>, a task was subdivided into three subtasks, all working
+towards a common objective (specifically, merging contributors).&lt;/p>
 &lt;p>The subtasks are started in the main task and reach completion, yielding results, within the lifespan of that
 overarching task.&lt;/p>
 &lt;p>This pattern was named &lt;em>“Structured Concurrency”&lt;/em> by Martin Sústrik&lt;sup id="fnref:1">&lt;a href="#fn:1" class="footnote-ref" role="doc-noteref">1&lt;/a>&lt;/sup> and further examined in Nathaniel J. Smith&amp;rsquo;s
@@ -1796,7 +1796,7 @@ this appears to be a bad tradeoff.&lt;/p>
 &lt;h2>Summary&lt;span class="hx-absolute -hx-mt-20" id="summary">&lt;/span>
 &lt;a href="#summary" class="subheading-anchor" aria-label="Permalink for this section">&lt;/a>&lt;/h2>&lt;p>Structured Concurrency is a pattern that is useful in writing correct Go programs. A context parameter und creating
 sub-contexts is helpful for avoiding resource leaks.&lt;/p>
-&lt;p>&amp;hellip; continued in the &lt;a href="structured-2" >next post&lt;/a>.&lt;/p>
+&lt;p>&amp;hellip; continued in the &lt;a href="https://blog.fillmore-labs.com/posts/structured-2" >next post&lt;/a>.&lt;/p>
 &lt;div class="footnotes" role="doc-endnotes">
 &lt;hr>
 &lt;ol>
@@ -1815,10 +1815,10 @@ sub-contexts is helpful for avoiding resource leaks.&lt;/p>
 &lt;/li>
 &lt;/ol>
 &lt;/div></description></item><item><title>Resource Leaks</title><link>https://blog.fillmore-labs.com/posts/goroutines-4/</link><pubDate>Thu, 21 Mar 2024 12:00:00 +0100</pubDate><guid>https://blog.fillmore-labs.com/posts/goroutines-4/</guid><description>
-&lt;p>&amp;hellip; continued from the &lt;a href="goroutines-3" >previous post&lt;/a>.&lt;/p>
+&lt;p>&amp;hellip; continued from the &lt;a href="https://blog.fillmore-labs.com/posts/goroutines-3" >previous post&lt;/a>.&lt;/p>
 &lt;h2>Problems With Concurrency&lt;span class="hx-absolute -hx-mt-20" id="problems-with-concurrency">&lt;/span>
-&lt;a href="#problems-with-concurrency" class="subheading-anchor" aria-label="Permalink for this section">&lt;/a>&lt;/h2>&lt;p>In &lt;a href="goroutines-1/#concurrency-is-not-parallelism1" >the first post&lt;/a> of this series I was citing two papers that examined
-common bugs in handling of Go concurrency.&lt;/p>
+&lt;a href="#problems-with-concurrency" class="subheading-anchor" aria-label="Permalink for this section">&lt;/a>&lt;/h2>&lt;p>In &lt;a href="https://blog.fillmore-labs.com/posts/goroutines-1/#concurrency-is-not-parallelism1" >the first post&lt;/a> of this series I was citing two papers that
+examined common bugs in handling of Go concurrency.&lt;/p>
 &lt;p>We took a long time to arrive here, but I wanted to show that goroutines are not the panacea especially beginners take
 them for. Understanding concurrent code is sometimes hard, even when it’s easy to write.&lt;/p>
 &lt;p>One thing I see often is leaking goroutines when handling errors:&lt;/p>
@@ -2141,7 +2141,7 @@ data (errors).&lt;/p>
 &lt;h2>Summary&lt;span class="hx-absolute -hx-mt-20" id="summary">&lt;/span>
 &lt;a href="#summary" class="subheading-anchor" aria-label="Permalink for this section">&lt;/a>&lt;/h2>&lt;p>Naïve use of goroutines and synchronization primitives can introduce bugs, while not necessarily improving execution
 efficiency.&lt;/p>
-&lt;p>&amp;hellip; continued in the &lt;a href="structured-1" >next post&lt;/a>.&lt;/p>
+&lt;p>&amp;hellip; continued in the &lt;a href="https://blog.fillmore-labs.com/posts/structured-1" >next post&lt;/a>.&lt;/p>
 &lt;div class="footnotes" role="doc-endnotes">
 &lt;hr>
 &lt;ol>
@@ -2153,7 +2153,7 @@ Operating Systems — April 2019 — Pages 865–878 —
 &lt;/li>
 &lt;/ol>
 &lt;/div></description></item><item><title>Avoiding Unnecessary Work</title><link>https://blog.fillmore-labs.com/posts/goroutines-3/</link><pubDate>Wed, 20 Mar 2024 12:00:00 +0100</pubDate><guid>https://blog.fillmore-labs.com/posts/goroutines-3/</guid><description>
-&lt;p>&amp;hellip; continued from the &lt;a href="goroutines-2" >previous post&lt;/a>.&lt;/p>
+&lt;p>&amp;hellip; continued from the &lt;a href="https://blog.fillmore-labs.com/posts/goroutines-2" >previous post&lt;/a>.&lt;/p>
 &lt;h2>Cancelation&lt;span class="hx-absolute -hx-mt-20" id="cancelation">&lt;/span>
 &lt;a href="#cancelation" class="subheading-anchor" aria-label="Permalink for this section">&lt;/a>&lt;/h2>&lt;p>Assume we have only a limited amount of time and want to use the data we have until this point. While we could build our
 own solution, but Go has &lt;a href="https://pkg.go.dev/context#WithTimeout" target="_blank" rel="noopener">context.WithTimeout&lt;/a>
@@ -2237,9 +2237,10 @@ title="Copy code"
 &lt;/button>
 &lt;/div>
 &lt;/div>
-&lt;p>We see some of elemts we were missing from &lt;a href="goroutines-1/#building-blocks" >the list of concurrency building blocks&lt;/a>:
-Cancelation and error handling. Also note that checking for cancelation often will have a noticeable performance impact,
-we accept that for clearness and demonstration purposes.&lt;/p>
+&lt;p>We see some of elemts we were missing from
+&lt;a href="https://blog.fillmore-labs.com/posts/goroutines-1/#building-blocks" >the list of concurrency building blocks&lt;/a>: Cancelation and error handling. Also
+note that checking for cancelation often will have a noticeable performance impact, we accept that for clearness and
+demonstration purposes.&lt;/p>
 &lt;p>Now we must adapt &lt;code>main&lt;/code>, too:&lt;/p>
 &lt;div class="hextra-code-block hx-relative hx-mt-6 first:hx-mt-0 hx-group/code">
 &lt;div>&lt;div class="highlight">&lt;div class="chroma">
@@ -2392,10 +2393,11 @@ title="Copy code"
 &lt;h2>Summary&lt;span class="hx-absolute -hx-mt-20" id="summary">&lt;/span>
 &lt;a href="#summary" class="subheading-anchor" aria-label="Permalink for this section">&lt;/a>&lt;/h2>&lt;p>We introduced the concept of cancelation and error handling, so that we can limit the amount of work done when we are no
 longer interested in the result, for example because another part of the task failed or some deadline timed out.&lt;/p>
-&lt;p>&amp;hellip; continued in the &lt;a href="goroutines-4" >next post&lt;/a>.&lt;/p></description></item><item><title>Using Goroutines Will Not Grant You Another CPU Core</title><link>https://blog.fillmore-labs.com/posts/goroutines-2/</link><pubDate>Tue, 19 Mar 2024 12:00:00 +0100</pubDate><guid>https://blog.fillmore-labs.com/posts/goroutines-2/</guid><description>
-&lt;p>&amp;hellip; continued from the &lt;a href="goroutines-1" >previous post&lt;/a>.&lt;/p>
+&lt;p>&amp;hellip; continued in the &lt;a href="https://blog.fillmore-labs.com/posts/goroutines-4" >next post&lt;/a>.&lt;/p></description></item><item><title>Using Goroutines Will Not Grant You Another CPU Core</title><link>https://blog.fillmore-labs.com/posts/goroutines-2/</link><pubDate>Tue, 19 Mar 2024 12:00:00 +0100</pubDate><guid>https://blog.fillmore-labs.com/posts/goroutines-2/</guid><description>
+&lt;p>&amp;hellip; continued from the &lt;a href="https://blog.fillmore-labs.com/posts/goroutines-1" >previous post&lt;/a>.&lt;/p>
 &lt;h2>Back to the Drawing Board&lt;span class="hx-absolute -hx-mt-20" id="back-to-the-drawing-board">&lt;/span>
-&lt;a href="#back-to-the-drawing-board" class="subheading-anchor" aria-label="Permalink for this section">&lt;/a>&lt;/h2>&lt;p>Let us keep &lt;a href="goroutines-1/#a-simple-example" >the original&lt;/a> &lt;code>Slow&lt;/code> implementation and move parallelization to &lt;code>main&lt;/code>:&lt;/p>
+&lt;a href="#back-to-the-drawing-board" class="subheading-anchor" aria-label="Permalink for this section">&lt;/a>&lt;/h2>&lt;p>Let us keep &lt;a href="https://blog.fillmore-labs.com/posts/goroutines-1/#a-simple-example" >the original&lt;/a> &lt;code>Slow&lt;/code> implementation and move parallelization to
+&lt;code>main&lt;/code>:&lt;/p>
 &lt;div class="hextra-code-block hx-relative hx-mt-6 first:hx-mt-0 hx-group/code">
 &lt;div>&lt;div class="highlight">&lt;div class="chroma">
 &lt;table class="lntable">&lt;tr>&lt;td class="lntd">
@@ -2617,7 +2619,7 @@ goroutines running at a time:&lt;/p>
 Go scheduler. We also saw that randomly using goroutines has a good chance to make a program run slower than before.&lt;/p>
 &lt;p>Interestingly enough the synchronous calculation of a single task is faster that the parallel one, and moving
 concurrency out of the calculation sped things up tremendously.&lt;/p>
-&lt;p>&amp;hellip; continued in the &lt;a href="goroutines-3" >next post&lt;/a>.&lt;/p></description></item><item><title>Goroutines Are Cheap, but Not Free</title><link>https://blog.fillmore-labs.com/posts/goroutines-1/</link><pubDate>Mon, 18 Mar 2024 12:00:00 +0100</pubDate><guid>https://blog.fillmore-labs.com/posts/goroutines-1/</guid><description>
+&lt;p>&amp;hellip; continued in the &lt;a href="https://blog.fillmore-labs.com/posts/goroutines-3" >next post&lt;/a>.&lt;/p></description></item><item><title>Goroutines Are Cheap, but Not Free</title><link>https://blog.fillmore-labs.com/posts/goroutines-1/</link><pubDate>Mon, 18 Mar 2024 12:00:00 +0100</pubDate><guid>https://blog.fillmore-labs.com/posts/goroutines-1/</guid><description>
 &lt;h2>Concurrency Is Not Parallelism&lt;sup id="fnref:1">&lt;a href="#fn:1" class="footnote-ref" role="doc-noteref">1&lt;/a>&lt;/sup>&lt;span class="hx-absolute -hx-mt-20" id="concurrency-is-not-parallelism">&lt;/span>
 &lt;a href="#concurrency-is-not-parallelism" class="subheading-anchor" aria-label="Permalink for this section">&lt;/a>&lt;/h2>&lt;p>Recently two interesting observations in &lt;em>“A Study of Real-World Data Races in Golang”&lt;/em>&lt;sup id="fnref:2">&lt;a href="#fn:2" class="footnote-ref" role="doc-noteref">2&lt;/a>&lt;/sup> caught my eye:&lt;/p>
 &lt;blockquote>
@@ -2630,8 +2632,8 @@ Java.&lt;/p>
 than other languages such as Java, Python, and NodeJS used for the same purpose.&lt;/p>
 &lt;/blockquote>
 &lt;p>These observations agree with my experiences, and while easy concurrency is great it comes with its problems.&lt;sup id="fnref:3">&lt;a href="#fn:3" class="footnote-ref" role="doc-noteref">3&lt;/a>&lt;/sup>&lt;/p>
-&lt;p>If you are familiar with the intricacies of the Go scheduler jump to &lt;a href="goroutines-4" >part four&lt;/a>, otherwise let&amp;rsquo;s just
-take a step back:&lt;/p>
+&lt;p>If you are familiar with the intricacies of the Go scheduler jump to &lt;a href="https://blog.fillmore-labs.com/posts/goroutines-4" >part four&lt;/a>, otherwise let&amp;rsquo;s
+just take a step back:&lt;/p>
 &lt;h3>Building Blocks&lt;span class="hx-absolute -hx-mt-20" id="building-blocks">&lt;/span>
 &lt;a href="#building-blocks" class="subheading-anchor" aria-label="Permalink for this section">&lt;/a>&lt;/h3>&lt;p>Concurrency in Go builds upon&lt;/p>
 &lt;ul>
@@ -2998,7 +3000,7 @@ forgives many mistakes, it is still often not used properly.&lt;/p>
 &lt;p>Especially interesting is the comparison of &lt;code>Parallel1&lt;/code> and &lt;code>Parallel2&lt;/code>. While both are bad solutions, I have often seen
 the construct of having a goroutine exclusively for waiting instead of doing actual work, and it makes a dramatic
 difference in this case.&lt;/p>
-&lt;p>&amp;hellip; continued in &lt;a href="goroutines-2" >part two&lt;/a>.&lt;/p>
+&lt;p>&amp;hellip; continued in &lt;a href="https://blog.fillmore-labs.com/posts/goroutines-2" >part two&lt;/a>.&lt;/p>
 &lt;div class="footnotes" role="doc-endnotes">
 &lt;hr>
 &lt;ol>
